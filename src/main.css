@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.active {
+	background-color: black;
+	color: white;
+}
+
+@keyframes blink {
+	0%,
+	100% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+.blinking-underscore {
+	animation: blink 1.5s linear infinite;
+}
+
+.gradient-bg {
+	background: linear-gradient(45deg, rgb(191, 219, 254), rgb(94, 149, 204));
+}
+
+.tooltip-wrapper {
+	position: relative;
+	display: inline-block;
+  }
+  
+  .tooltip-wrapper .tooltip-text {
+	visibility: hidden;
+	min-width: 120px;
+	max-width: 80vw;
+	background-color: #555;
+	color: #fff;
+	text-align: center;
+	padding: 5px;
+	border-radius: 6px;
+	position: absolute;
+	z-index: 1;
+	bottom: 125%; /* Adjust as needed */
+	left: 50%;
+	margin-left: -60px; /* Adjust as needed */
+	opacity: 0;
+	transition: opacity 0.3s;
+  }
+  
+  .tooltip-wrapper:hover .tooltip-text {
+	visibility: visible;
+	opacity: 1;
+  }
+  
