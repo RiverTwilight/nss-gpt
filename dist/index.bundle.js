@@ -48,8 +48,10 @@ const Footer = () => {
   return y("div", {
     className: "py-4 text-slate-500 text-center font-mono"
   }, y("a", {
+    href: "https://github.com/rivertwilght",
     className: "cursor-pointer"
-  }, "By @RiverTwilight"), " \xB7", " ", y("a", {
+  }, "By @RiverTwilight"), " ", "\xB7", " ", y("a", {
+    href: "https://nssctf.vip",
     className: "underline cursor-pointer"
   }, "NSSCTF"));
 };
@@ -411,26 +413,30 @@ const App = () => {
   })))))), activeTab === "History" && y("div", {
     className: "p-2"
   }, history.length < 1 ? y("div", {
-    className: "h-[100px] text-slate-500 text-center "
-  }, y("div", null, "No history yet"), y("button", {
-    onClick: handleGetHistory,
-    className: "mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-  }, "Refresh History")) : y("ul", null, y("li", {
+    className: "h-[40px] leading-[40px] text-slate-500 text-center "
+  }, y("div", null, "No history yet")) : y("ul", null, y("li", {
     className: "px-2 flex py-2"
   }, y("span", {
     className: "w-full"
   }, "Date"), y("span", {
     className: "w-full"
-  }, "Type")), history.map((item, index) => y("li", {
+  }, "Type"), y("span", {
+    className: "w-full"
+  }, "Score")), history.map((item, index) => y("li", {
     key: index,
     className: "flex py-3 px-2 border-t-2 border-slate-200 hover:bg-slate-100"
   }, y("span", {
     className: "w-full"
-  }, item.submit_date), y("div", {
+  }, item.submit_date), y("span", {
+    className: "w-full text-green-700 text-sm"
+  }, item.challenge_name), y("span", {
     className: "w-full"
-  }, y("span", {
-    className: " bg-green-700 text-white rounded p-1 text-sm"
-  }, item.challenge_name))))))))), y(Result, {
+  }, "14")))), y("div", {
+    className: "text-center"
+  }, y("button", {
+    onClick: handleGetHistory,
+    className: "mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+  }, "Refresh History")))))), y(Result, {
     uuid: uuid,
     submitId: recentSubmitId
   }), y(Footer, null));

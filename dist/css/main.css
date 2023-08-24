@@ -615,6 +615,10 @@ video {
   height: 100px;
 }
 
+.h-\[40px\] {
+  height: 40px;
+}
+
 .max-h-\[200px\] {
   max-height: 200px;
 }
@@ -921,6 +925,10 @@ video {
   line-height: 100px;
 }
 
+.leading-\[40px\] {
+  line-height: 40px;
+}
+
 .text-slate-400 {
   --tw-text-opacity: 1;
   color: rgb(148 163 184 / var(--tw-text-opacity));
@@ -959,6 +967,11 @@ video {
 .text-blue-600 {
   --tw-text-opacity: 1;
   color: rgb(37 99 235 / var(--tw-text-opacity));
+}
+
+.text-green-700 {
+  --tw-text-opacity: 1;
+  color: rgb(21 128 61 / var(--tw-text-opacity));
 }
 
 .underline {

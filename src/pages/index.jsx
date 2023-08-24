@@ -35,8 +35,8 @@ const App = () => {
 	}, [uuid]);
 
 	const handlePromptSubmit = (id) => {
-		if(!!!selectedProblem) return
-		
+		if (!!!selectedProblem) return;
+
 		setIsLoading(true);
 		fetch("https://prompt.wd-ljt.com/submit/", {
 			method: "POST",
@@ -437,20 +437,17 @@ const App = () => {
 						{activeTab === "History" && (
 							<div className="p-2">
 								{history.length < 1 ? (
-									<div className="h-[100px] text-slate-500 text-center ">
+									<div className="h-[40px] leading-[40px] text-slate-500 text-center ">
 										<div>No history yet</div>
-										<button
-											onClick={handleGetHistory}
-											className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-										>
-											Refresh History
-										</button>
 									</div>
 								) : (
 									<ul>
 										<li className="px-2 flex py-2">
 											<span className="w-full">Date</span>
 											<span className="w-full">Type</span>
+											<span className="w-full">
+												Score
+											</span>
 										</li>
 										{history.map((item, index) => (
 											<li
@@ -460,15 +457,26 @@ const App = () => {
 												<span className="w-full">
 													{item.submit_date}
 												</span>
-												<div className="w-full">
-													<span className=" bg-green-700 text-white rounded p-1 text-sm">
-														{item.challenge_name}
-													</span>
-												</div>
+
+												<span className="w-full text-green-700 text-sm">
+													{item.challenge_name}
+												</span>
+
+												<span className="w-full">
+													14
+												</span>
 											</li>
 										))}
 									</ul>
 								)}
+								<div className="text-center">
+									<button
+										onClick={handleGetHistory}
+										className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+									>
+										Refresh History
+									</button>
+								</div>
 							</div>
 						)}
 					</section>
