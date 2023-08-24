@@ -84,6 +84,7 @@ const App = () => {
 			.then((data) => {
 				if (data.code === 200 || data.code === 204) {
 					setUuid(data.message.uuid);
+					setActiveTab("Submit")
 				}
 			});
 	};
