@@ -607,6 +607,14 @@ video {
   height: 100%;
 }
 
+.h-4 {
+  height: 1rem;
+}
+
+.h-\[100px\] {
+  height: 100px;
+}
+
 .max-h-\[200px\] {
   max-height: 200px;
 }
@@ -702,6 +710,10 @@ video {
 
 .overflow-auto {
   overflow: auto;
+}
+
+.overflow-hidden {
+  overflow: hidden;
 }
 
 .rounded {
@@ -903,6 +915,10 @@ video {
 
 .uppercase {
   text-transform: uppercase;
+}
+
+.leading-\[100px\] {
+  line-height: 100px;
 }
 
 .text-slate-400 {

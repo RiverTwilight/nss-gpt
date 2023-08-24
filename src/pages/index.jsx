@@ -1,29 +1,43 @@
 import { h, Component, render, Fragment } from "preact";
 import { useState, useEffect } from "preact/hooks";
+import ProgressBar from "../components/progress";
+import Hero from "../components/hero";
+import Footer from "../components/footer";
+import Result from "../components/result";
 
 const App = () => {
 	const [activeTab, setActiveTab] = useState("Submit");
-	const [activeMode, setActiveMode] = useState("Unicode");
-	const [selectedProblem, setSelectedProblem] = useState(1);
+	const [selectedProblem, setSelectedProblem] = useState("");
 	const [problems, setProblems] = useState([]);
 	const [prompt, setPrompt] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const [score, setScore] = useState(0);
 	const [nssKey, setNssKey] = useState("7e4dd3f47adecd02f75c");
 	const [nssSecret, setNssSecret] = useState(
 		"c396a00f30620c092a9c626d0d9287995aaaba02"
 	);
 	const [history, setHistory] = useState([]);
-	const [uuid, setUuid] = useState("0000-0000-0000-0000");
+	const [uuid, setUuid] = useState(null);
+	const [recentSubmitId, setRecentSubmitId] = useState("");
 
 	useEffect(() => {
-		setUuid(localStorage.getItem("uuid") || "0000-0000-0000-0000");
+		setUuid(localStorage.getItem("uuid") || "");
 	}, []);
 
 	useEffect(() => {
-		getProblems(uuid);
+		if (!!uuid) {
+			getProblems(uuid);
+			setInterval(() => {
+				let currentId = uuid;
+				getScore(currentId);
+			}, 10000);
+		}
 	}, [uuid]);
 
-	const handlePromptSubmit = () => {
+	const handlePromptSubmit = (id) => {
+		if(!!!selectedProblem) return
+		
+		setIsLoading(true);
 		fetch("https://prompt.wd-ljt.com/submit/", {
 			method: "POST",
 			headers: {
@@ -36,15 +50,14 @@ const App = () => {
 			body: JSON.stringify({
 				challenge_name: selectedProblem,
 				prompt: prompt,
-				uuid: uuid,
+				uuid: id,
 			}),
 			mode: "cors",
 			credentials: "include",
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
-				setHistory(data.message.history);
+				setRecentSubmitId(data.message.submit_id);
 			})
 			.finally(() => {
 				setIsLoading(false);
@@ -107,8 +120,32 @@ const App = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
 				setHistory(data.message.history);
+			})
+			.finally(() => {
+				setIsLoading(false);
+			});
+	};
+
+	const getScore = (id) => {
+		fetch("https://prompt.wd-ljt.com/settle/", {
+			method: "POST",
+			headers: {
+				"content-type": "application/json",
+				"sec-fetch-mode": "cors",
+				"sec-fetch-site": "same-origin",
+			},
+			referrer: "https://prompt.wd-ljt.com/",
+			referrerPolicy: "strict-origin-when-cross-origin",
+			body: JSON.stringify({ uuid: id }),
+			mode: "cors",
+			credentials: "include",
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.code === 200) {
+					setScore(data.message.score);
+				}
 			})
 			.finally(() => {
 				setIsLoading(false);
@@ -133,8 +170,6 @@ const App = () => {
 			.then((data) => {
 				if (data.code == 200) {
 					let problemList = [];
-
-					console.log(data.message);
 
 					data.message.solved.forEach((solved) => {
 						problemList.push({
@@ -163,6 +198,7 @@ const App = () => {
 					});
 
 					setProblems(problemList);
+					setSelectedProblem(data.message.unsolved.challenge_name);
 				}
 			})
 			.finally(() => {
@@ -188,46 +224,8 @@ const App = () => {
 	return (
 		<div className="flex flex-col">
 			<main className="flex-grow w-[764px] mt-[20vh]">
-				<h1 className="font font-mono font-bold text-4xl">
-					NSSCTF
-					<br />
-					2nd Prompt Challenge
-					<span className="blinking-underscore">_</span>
-				</h1>
-
-				<div className="py-6 text-slate-600">
-					<p> 👋 &nbsp; Welcome to NSSCTF 2nd.</p>
-					<p>
-						🎉 &nbsp; Let's see how you hypnotized GPT and got the
-						key.
-					</p>
-					<p> 🚀 &nbsp; Start your show.</p>
-				</div>
-
-				<div className="mt-6 gap-1 py-4 px-6 w-full bg-white rounded-xl shadow-lg flex items-center">
-					<span className="mx-2 text-slate-500">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							height="24"
-							viewBox="0 -960 960 960"
-							width="24"
-						>
-							<path d="M298-120v-60h152v-148q-54-11-96-46.5T296-463q-74-8-125-60t-51-125v-44q0-25 17.5-42.5T180-752h104v-88h392v88h104q25 0 42.5 17.5T840-692v44q0 73-51 125t-125 60q-16 53-58 88.5T510-328v148h152v60H298Zm-14-406v-166H180v44q0 45 29.5 78.5T284-526Zm196 141q57 0 96.5-40t39.5-97v-258H344v258q0 57 39.5 97t96.5 40Zm196-141q45-10 74.5-43.5T780-648v-44H676v166Zm-196-57Z" />
-						</svg>
-					</span>
-
-					<div className="h-[1.5em] w-full relative">
-						<div className="text-white absolute inset-0 flex items-center justify-center">
-							<span>84/100</span>
-						</div>
-						<div className="h-full bg-gray-200 rounded-xl">
-							<div
-								className="h-full bg-blue-500 rounded-xl"
-								style={{ width: "84%" }}
-							></div>
-						</div>
-					</div>
-				</div>
+				<Hero />
+				<ProgressBar progress={score} total={43200} />
 
 				<div className="mt-4 w-full bg-white rounded-xl shadow-lg">
 					<div className="w-full flex mb-4">
@@ -323,7 +321,7 @@ const App = () => {
 											Change
 										</div>
 									</div>
-									<div className="flex mt-2 p-1 bg-slate-200 rounded">
+									{/* <div className="flex mt-2 p-1 bg-slate-200 rounded">
 										<button
 											onClick={() =>
 												setActiveMode("Unicode")
@@ -346,7 +344,7 @@ const App = () => {
 										>
 											ASCII
 										</button>
-									</div>
+									</div> */}
 									<textarea
 										type="text"
 										value={prompt}
@@ -359,8 +357,15 @@ const App = () => {
 									<div className="flex flex-row-reverse justify-between mt-4">
 										<div className="gap-2 flex flex-row-reverse">
 											<button
-												onClick={handlePromptSubmit}
-												className="px-4 uppercase font-semibold rounded py-2 bg-blue-600 text-white"
+												onClick={() =>
+													handlePromptSubmit(uuid)
+												}
+												className={`px-4 uppercase font-semibold rounded py-2 ${
+													isLoading ||
+													!!!selectedProblem
+														? "bg-gray-400"
+														: "bg-blue-600"
+												} text-white`}
 											>
 												Submit
 											</button>
@@ -430,43 +435,47 @@ const App = () => {
 						)}
 
 						{activeTab === "History" && (
-							<div>
-								<button
-									onClick={handleGetHistory}
-									className="mb-4 px-4 py-2 bg-blue-600 text-white"
-								>
-									Get History
-								</button>
-								<ul>
-									<li className="px-2 flex py-2">
-										<span className="w-full">Date</span>
-										<span className="w-full">Type</span>
-									</li>
-									{history.map((item, index) => (
-										<li
-											key={index}
-											className="flex py-3 px-2 border-t-2 border-slate-200 hover:bg-slate-100"
+							<div className="p-2">
+								{history.length < 1 ? (
+									<div className="h-[100px] text-slate-500 text-center ">
+										<div>No history yet</div>
+										<button
+											onClick={handleGetHistory}
+											className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
 										>
-											<span className="w-full">
-												{item.submit_date}
-											</span>
-											<div className="w-full">
-												<span className=" bg-green-700 text-white rounded p-1 text-sm">
-													{item.challenge_name}
-												</span>
-											</div>
+											Refresh History
+										</button>
+									</div>
+								) : (
+									<ul>
+										<li className="px-2 flex py-2">
+											<span className="w-full">Date</span>
+											<span className="w-full">Type</span>
 										</li>
-									))}
-								</ul>
+										{history.map((item, index) => (
+											<li
+												key={index}
+												className="flex py-3 px-2 border-t-2 border-slate-200 hover:bg-slate-100"
+											>
+												<span className="w-full">
+													{item.submit_date}
+												</span>
+												<div className="w-full">
+													<span className=" bg-green-700 text-white rounded p-1 text-sm">
+														{item.challenge_name}
+													</span>
+												</div>
+											</li>
+										))}
+									</ul>
+								)}
 							</div>
 						)}
 					</section>
 				</div>
 			</main>
-			<div className="py-4 text-slate-500 text-center font-mono">
-				<a className="cursor-pointer">By @RiverTwilight</a> ·{" "}
-				<a className="underline cursor-pointer">NSSCTF</a>
-			</div>
+			<Result uuid={uuid} submitId={recentSubmitId} />
+			<Footer />
 		</div>
 	);
 };

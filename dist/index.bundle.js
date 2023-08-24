@@ -4,24 +4,124 @@ var n,l$1,u$1,i$1,o$1,r$1,f$1,c$1={},s$1=[],a$1=/acit|ex(?:s|g|n|p|$)|rph|grid|o
 
 var t,r,u,i,o=0,f=[],c=[],e=l$1.__b,a=l$1.__r,v=l$1.diffed,l=l$1.__c,m=l$1.unmount;function d(t,u){l$1.__h&&l$1.__h(r,t,o||u),o=0;var i=r.__H||(r.__H={__:[],__h:[]});return t>=i.__.length&&i.__.push({__V:c}),i.__[t]}function h(n){return o=1,s(B,n)}function s(n,u,i){var o=d(t++,2);if(o.t=n,!o.__c&&(o.__=[i?i(u):B(void 0,u),function(n){var t=o.__N?o.__N[0]:o.__[0],r=o.t(t,n);t!==r&&(o.__N=[r,o.__[1]],o.__c.setState({}));}],o.__c=r,!r.u)){var f=function(n,t,r){if(!o.__c.__H)return !0;var u=o.__c.__H.__.filter(function(n){return n.__c});if(u.every(function(n){return !n.__N}))return !c||c.call(this,n,t,r);var i=!1;return u.forEach(function(n){if(n.__N){var t=n.__[0];n.__=n.__N,n.__N=void 0,t!==n.__[0]&&(i=!0);}}),!(!i&&o.__c.props===n)&&(!c||c.call(this,n,t,r))};r.u=!0;var c=r.shouldComponentUpdate,e=r.componentWillUpdate;r.componentWillUpdate=function(n,t,r){if(this.__e){var u=c;c=void 0,f(n,t,r),c=u;}e&&e.call(this,n,t,r);},r.shouldComponentUpdate=f;}return o.__N||o.__}function p(u,i){var o=d(t++,3);!l$1.__s&&z(o.__H,i)&&(o.__=u,o.i=i,r.__H.__h.push(o));}function b(){for(var t;t=f.shift();)if(t.__P&&t.__H)try{t.__H.__h.forEach(k),t.__H.__h.forEach(w),t.__H.__h=[];}catch(r){t.__H.__h=[],l$1.__e(r,t.__v);}}l$1.__b=function(n){r=null,e&&e(n);},l$1.__r=function(n){a&&a(n),t=0;var i=(r=n.__c).__H;i&&(u===r?(i.__h=[],r.__h=[],i.__.forEach(function(n){n.__N&&(n.__=n.__N),n.__V=c,n.__N=n.i=void 0;})):(i.__h.forEach(k),i.__h.forEach(w),i.__h=[],t=0)),u=r;},l$1.diffed=function(t){v&&v(t);var o=t.__c;o&&o.__H&&(o.__H.__h.length&&(1!==f.push(o)&&i===l$1.requestAnimationFrame||((i=l$1.requestAnimationFrame)||j)(b)),o.__H.__.forEach(function(n){n.i&&(n.__H=n.i),n.__V!==c&&(n.__=n.__V),n.i=void 0,n.__V=c;})),u=r=null;},l$1.__c=function(t,r){r.some(function(t){try{t.__h.forEach(k),t.__h=t.__h.filter(function(n){return !n.__||w(n)});}catch(u){r.some(function(n){n.__h&&(n.__h=[]);}),r=[],l$1.__e(u,t.__v);}}),l&&l(t,r);},l$1.unmount=function(t){m&&m(t);var r,u=t.__c;u&&u.__H&&(u.__H.__.forEach(function(n){try{k(n);}catch(n){r=n;}}),u.__H=void 0,r&&l$1.__e(r,u.__v));};var g="function"==typeof requestAnimationFrame;function j(n){var t,r=function(){clearTimeout(u),g&&cancelAnimationFrame(t),setTimeout(n);},u=setTimeout(r,100);g&&(t=requestAnimationFrame(r));}function k(n){var t=r,u=n.__c;"function"==typeof u&&(n.__c=void 0,u()),r=t;}function w(n){var t=r;n.__c=n.__(),r=t;}function z(n,t){return !n||n.length!==t.length||t.some(function(t,r){return t!==n[r]})}function B(n,t){return "function"==typeof t?t(n):t}
 
+const ProgressBar = ({
+  progress,
+  total
+}) => {
+  const progressPercent = progress / total * 100;
+  return y("div", {
+    className: "mt-6 gap-1 py-4 px-6 w-full bg-white rounded-xl shadow-lg flex items-center"
+  }, y("span", {
+    className: "mx-2 text-slate-500"
+  }, y("svg", {
+    xmlns: "http://www.w3.org/2000/svg",
+    height: "24",
+    viewBox: "0 -960 960 960",
+    width: "24"
+  }, y("path", {
+    d: "M298-120v-60h152v-148q-54-11-96-46.5T296-463q-74-8-125-60t-51-125v-44q0-25 17.5-42.5T180-752h104v-88h392v88h104q25 0 42.5 17.5T840-692v44q0 73-51 125t-125 60q-16 53-58 88.5T510-328v148h152v60H298Zm-14-406v-166H180v44q0 45 29.5 78.5T284-526Zm196 141q57 0 96.5-40t39.5-97v-258H344v258q0 57 39.5 97t96.5 40Zm196-141q45-10 74.5-43.5T780-648v-44H676v166Zm-196-57Z"
+  }))), y("div", {
+    className: "h-[1.5em] w-full relative overflow-hidden"
+  }, y("div", {
+    className: "text-white absolute inset-0 flex items-center justify-center"
+  }, y("span", null, progress, "/", total)), y("div", {
+    className: "h-full bg-gray-200 rounded-xl"
+  }, progressPercent > 5 && y("div", {
+    className: "h-full bg-blue-500 rounded-xl",
+    style: {
+      width: `${progress / total * 100}%`
+    }
+  }))));
+};
+
+const Hero = () => {
+  return y(k$1, null, y("h1", {
+    className: "font font-mono font-bold text-4xl"
+  }, "NSSCTF", y("br", null), "2nd Prompt Challenge", y("span", {
+    className: "blinking-underscore"
+  }, "_")), y("div", {
+    className: "py-6 text-slate-600"
+  }, y("p", null, " \uD83C\uDF89 \xA0 Welcome to NSSCTF challenge!"), y("p", null, "\uD83D\uDD11 \xA0 Hypnotized GPT, and got the KEY."), y("p", null, " \uD83D\uDE80 \xA0 Start your show.")));
+};
+
+const Footer = () => {
+  return y("div", {
+    className: "py-4 text-slate-500 text-center font-mono"
+  }, y("a", {
+    className: "cursor-pointer"
+  }, "By @RiverTwilight"), " \xB7", " ", y("a", {
+    className: "underline cursor-pointer"
+  }, "NSSCTF"));
+};
+
+const Result = ({
+  submitId,
+  uuid
+}) => {
+  const [recentSubmitRes, setRecentSubmitRes] = h(null);
+  p(() => {
+    if (submitId.length > 2) {
+      getSubmitResult(submitId);
+    }
+  }, [submitId]);
+  const getSubmitResult = id => {
+    fetch("https://prompt.wd-ljt.com/get_result/", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin"
+      },
+      referrer: "https://prompt.wd-ljt.com/",
+      referrerPolicy: "strict-origin-when-cross-origin",
+      body: JSON.stringify({
+        uuid: uuid,
+        submit_id: id
+      }),
+      mode: "cors",
+      credentials: "include"
+    }).then(response => response.json()).then(data => {
+      setRecentSubmitRes({
+        score: data.message.score,
+        result: data.message.result
+      });
+    });
+  };
+  if (!!!recentSubmitRes) {
+    return null;
+  }
+  return y("div", {
+    className: "mt-4 gap-1 py-4 px-6 w-full bg-white rounded-xl shadow-lg flex items-center"
+  }, recentSubmitRes.score);
+};
+
 const App = () => {
   const [activeTab, setActiveTab] = h("Submit");
-  const [activeMode, setActiveMode] = h("Unicode");
-  const [selectedProblem, setSelectedProblem] = h(1);
+  const [selectedProblem, setSelectedProblem] = h("");
   const [problems, setProblems] = h([]);
   const [prompt, setPrompt] = h("");
   const [isLoading, setIsLoading] = h(false);
+  const [score, setScore] = h(0);
   const [nssKey, setNssKey] = h("7e4dd3f47adecd02f75c");
   const [nssSecret, setNssSecret] = h("c396a00f30620c092a9c626d0d9287995aaaba02");
   const [history, setHistory] = h([]);
-  const [uuid, setUuid] = h("0000-0000-0000-0000");
+  const [uuid, setUuid] = h(null);
+  const [recentSubmitId, setRecentSubmitId] = h("");
   p(() => {
-    setUuid(localStorage.getItem("uuid") || "0000-0000-0000-0000");
+    setUuid(localStorage.getItem("uuid") || "");
   }, []);
   p(() => {
-    getProblems(uuid);
+    if (!!uuid) {
+      getProblems(uuid);
+      setInterval(() => {
+        let currentId = uuid;
+        getScore(currentId);
+      }, 10000);
+    }
   }, [uuid]);
-  const handlePromptSubmit = () => {
+  const handlePromptSubmit = id => {
+    if (!!!selectedProblem) return;
+    setIsLoading(true);
     fetch("https://prompt.wd-ljt.com/submit/", {
       method: "POST",
       headers: {
@@ -34,13 +134,12 @@ const App = () => {
       body: JSON.stringify({
         challenge_name: selectedProblem,
         prompt: prompt,
-        uuid: uuid
+        uuid: id
       }),
       mode: "cors",
       credentials: "include"
     }).then(response => response.json()).then(data => {
-      console.log(data);
-      setHistory(data.message.history);
+      setRecentSubmitId(data.message.submit_id);
     }).finally(() => {
       setIsLoading(false);
     });
@@ -100,8 +199,30 @@ const App = () => {
       mode: "cors",
       credentials: "include"
     }).then(response => response.json()).then(data => {
-      console.log(data);
       setHistory(data.message.history);
+    }).finally(() => {
+      setIsLoading(false);
+    });
+  };
+  const getScore = id => {
+    fetch("https://prompt.wd-ljt.com/settle/", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin"
+      },
+      referrer: "https://prompt.wd-ljt.com/",
+      referrerPolicy: "strict-origin-when-cross-origin",
+      body: JSON.stringify({
+        uuid: id
+      }),
+      mode: "cors",
+      credentials: "include"
+    }).then(response => response.json()).then(data => {
+      if (data.code === 200) {
+        setScore(data.message.score);
+      }
     }).finally(() => {
       setIsLoading(false);
     });
@@ -124,7 +245,6 @@ const App = () => {
     }).then(response => response.json()).then(data => {
       if (data.code == 200) {
         let problemList = [];
-        console.log(data.message);
         data.message.solved.forEach(solved => {
           problemList.push({
             solved: true,
@@ -146,6 +266,7 @@ const App = () => {
           }
         });
         setProblems(problemList);
+        setSelectedProblem(data.message.unsolved.challenge_name);
       }
     }).finally(() => {
       setIsLoading(false);
@@ -168,35 +289,10 @@ const App = () => {
     className: "flex flex-col"
   }, y("main", {
     className: "flex-grow w-[764px] mt-[20vh]"
-  }, y("h1", {
-    className: "font font-mono font-bold text-4xl"
-  }, "NSSCTF", y("br", null), "2nd Prompt Challenge", y("span", {
-    className: "blinking-underscore"
-  }, "_")), y("div", {
-    className: "py-6 text-slate-600"
-  }, y("p", null, " \uD83D\uDC4B \xA0 Welcome to NSSCTF 2nd."), y("p", null, "\uD83C\uDF89 \xA0 Let's see how you hypnotized GPT and got the key."), y("p", null, " \uD83D\uDE80 \xA0 Start your show.")), y("div", {
-    className: "mt-6 gap-1 py-4 px-6 w-full bg-white rounded-xl shadow-lg flex items-center"
-  }, y("span", {
-    className: "mx-2 text-slate-500"
-  }, y("svg", {
-    xmlns: "http://www.w3.org/2000/svg",
-    height: "24",
-    viewBox: "0 -960 960 960",
-    width: "24"
-  }, y("path", {
-    d: "M298-120v-60h152v-148q-54-11-96-46.5T296-463q-74-8-125-60t-51-125v-44q0-25 17.5-42.5T180-752h104v-88h392v88h104q25 0 42.5 17.5T840-692v44q0 73-51 125t-125 60q-16 53-58 88.5T510-328v148h152v60H298Zm-14-406v-166H180v44q0 45 29.5 78.5T284-526Zm196 141q57 0 96.5-40t39.5-97v-258H344v258q0 57 39.5 97t96.5 40Zm196-141q45-10 74.5-43.5T780-648v-44H676v166Zm-196-57Z"
-  }))), y("div", {
-    className: "h-[1.5em] w-full relative"
-  }, y("div", {
-    className: "text-white absolute inset-0 flex items-center justify-center"
-  }, y("span", null, "84/100")), y("div", {
-    className: "h-full bg-gray-200 rounded-xl"
-  }, y("div", {
-    className: "h-full bg-blue-500 rounded-xl",
-    style: {
-      width: "84%"
-    }
-  })))), y("div", {
+  }, y(Hero, null), y(ProgressBar, {
+    progress: score,
+    total: 43200
+  }), y("div", {
     className: "mt-4 w-full bg-white rounded-xl shadow-lg"
   }, y("div", {
     className: "w-full flex mb-4"
@@ -263,15 +359,7 @@ const App = () => {
   }, uuid)), y("div", {
     onClick: () => setActiveTab("ID"),
     className: "text-blue-500 cursor-pointer"
-  }, "Change")), y("div", {
-    className: "flex mt-2 p-1 bg-slate-200 rounded"
-  }, y("button", {
-    onClick: () => setActiveMode("Unicode"),
-    className: `rounded w-full border-blue-200 px-3 py-1 ${activeMode === "Unicode" && "bg-blue-700 text-white"}`
-  }, "Unicode"), y("button", {
-    onClick: () => setActiveMode("ASCII"),
-    className: `rounded w-full border-blue-200 px-3 py-1 ${activeMode === "ASCII" && "bg-blue-700 text-white"}`
-  }, "ASCII")), y("textarea", {
+  }, "Change")), y("textarea", {
     type: "text",
     value: prompt,
     onChange: e => setPrompt(e.target.value),
@@ -282,8 +370,8 @@ const App = () => {
   }, y("div", {
     className: "gap-2 flex flex-row-reverse"
   }, y("button", {
-    onClick: handlePromptSubmit,
-    className: "px-4 uppercase font-semibold rounded py-2 bg-blue-600 text-white"
+    onClick: () => handlePromptSubmit(uuid),
+    className: `px-4 uppercase font-semibold rounded py-2 ${isLoading || !!!selectedProblem ? "bg-gray-400" : "bg-blue-600"} text-white`
   }, "Submit"), y("span", {
     className: "font-mono text-slate-400 self-center"
   }, "Shift + Enter")), y("div", {
@@ -320,10 +408,14 @@ const App = () => {
     className: "fill-slate-500"
   }, y("path", {
     d: "M484-247q16 0 27-11t11-27q0-16-11-27t-27-11q-16 0-27 11t-11 27q0 16 11 27t27 11Zm-35-146h59q0-26 6.5-47.5T555-490q31-26 44-51t13-55q0-53-34.5-85T486-713q-49 0-86.5 24.5T345-621l53 20q11-28 33-43.5t52-15.5q34 0 55 18.5t21 47.5q0 22-13 41.5T508-512q-30 26-44.5 51.5T449-393Zm31 313q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z"
-  })))))), activeTab === "History" && y("div", null, y("button", {
+  })))))), activeTab === "History" && y("div", {
+    className: "p-2"
+  }, history.length < 1 ? y("div", {
+    className: "h-[100px] text-slate-500 text-center "
+  }, y("div", null, "No history yet"), y("button", {
     onClick: handleGetHistory,
-    className: "mb-4 px-4 py-2 bg-blue-600 text-white"
-  }, "Get History"), y("ul", null, y("li", {
+    className: "mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+  }, "Refresh History")) : y("ul", null, y("li", {
     className: "px-2 flex py-2"
   }, y("span", {
     className: "w-full"
@@ -338,13 +430,10 @@ const App = () => {
     className: "w-full"
   }, y("span", {
     className: " bg-green-700 text-white rounded p-1 text-sm"
-  }, item.challenge_name))))))))), y("div", {
-    className: "py-4 text-slate-500 text-center font-mono"
-  }, y("a", {
-    className: "cursor-pointer"
-  }, "By @RiverTwilight"), " \xB7", " ", y("a", {
-    className: "underline cursor-pointer"
-  }, "NSSCTF")));
+  }, item.challenge_name))))))))), y(Result, {
+    uuid: uuid,
+    submitId: recentSubmitId
+  }), y(Footer, null));
 };
 
 // Render the App into the DOM
