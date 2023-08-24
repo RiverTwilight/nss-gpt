@@ -67,6 +67,8 @@ const App = () => {
 	};
 
 	const handleGenerateUUID = () => {
+		setIsLoading(true);
+
 		fetch("https://prompt.wd-ljt.com/get_user_id/", {
 			method: "POST",
 			headers: {
@@ -84,8 +86,11 @@ const App = () => {
 			.then((data) => {
 				if (data.code === 200 || data.code === 204) {
 					setUuid(data.message.uuid);
-					setActiveTab("Submit")
+					setActiveTab("Submit");
 				}
+			})
+			.finally(() => {
+				setIsLoading(false);
 			});
 	};
 
