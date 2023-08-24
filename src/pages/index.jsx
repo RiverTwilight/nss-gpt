@@ -12,10 +12,12 @@ const App = () => {
 	const [prompt, setPrompt] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [score, setScore] = useState(0);
-	const [nssKey, setNssKey] = useState("7e4dd3f47adecd02f75c");
-	const [nssSecret, setNssSecret] = useState(
-		"c396a00f30620c092a9c626d0d9287995aaaba02"
-	);
+	const [nssKey, setNssKey] = useState("");
+	const [nssSecret, setNssSecret] = useState("");
+	// const [nssKey, setNssKey] = useState("7e4dd3f47adecd02f75c");
+	// const [nssSecret, setNssSecret] = useState(
+	// 	"c396a00f30620c092a9c626d0d9287995aaaba02"
+	// );
 	const [history, setHistory] = useState([]);
 	const [uuid, setUuid] = useState(null);
 	const [recentSubmitId, setRecentSubmitId] = useState("");
@@ -80,27 +82,9 @@ const App = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				let problemList = [];
-				data.message.solved.forEach((solved) => {
-					problemList.push({
-						solved: true,
-						type: solved.challenge_type,
-						name: solved.challenge_name,
-						prompt: solved.challenge_prompt,
-						best_score: solved.best_score,
-					});
-				});
-				data.message.unsolved.forEach((unsolved) => {
-					problemList.push({
-						solved: false,
-						type: unsolved.challenge_type,
-						name: unsolved.challenge_name,
-						prompt: unsolved.challenge_prompt,
-						best_score: unsolved.best_score,
-					});
-				});
-
-				setProblems(problemList);
+				if (data.code === 200 || data.code === 204) {
+					setUuid(data.message.uuid);
+				}
 			});
 	};
 
