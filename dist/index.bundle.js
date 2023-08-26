@@ -48,10 +48,10 @@ const Footer = () => {
   return y("div", {
     className: "py-4 text-slate-500 text-center font-mono"
   }, y("a", {
-    href: "https://github.com/rivertwilght",
+    href: "https://github.com/rivertwilight",
     className: "cursor-pointer"
   }, "Designed By @RiverTwilight"), " ", "\xB7", " ", y("a", {
-    href: "https://ctfer.vip",
+    href: "https://nssctf.cn",
     className: "underline cursor-pointer"
   }, "NSSCTF"));
 };
