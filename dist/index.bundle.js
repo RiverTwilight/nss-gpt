@@ -50,8 +50,8 @@ const Footer = () => {
   }, y("a", {
     href: "https://github.com/rivertwilght",
     className: "cursor-pointer"
-  }, "By @RiverTwilight"), " ", "\xB7", " ", y("a", {
-    href: "https://nssctf.vip",
+  }, "Designed By @RiverTwilight"), " ", "\xB7", " ", y("a", {
+    href: "https://ctfer.vip",
     className: "underline cursor-pointer"
   }, "NSSCTF"));
 };
@@ -95,6 +95,31 @@ const Result = ({
   return y("div", {
     className: "mt-4 gap-1 py-4 px-6 w-full bg-white rounded-xl shadow-lg flex items-center"
   }, recentSubmitRes.score);
+};
+
+const Snackbar = ({
+  message
+}) => {
+  p(() => {
+    const timer = setTimeout(() => {
+      const element = document.getElementById("snackbar-root");
+      if (element) {
+        D(null, element);
+      }
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+  return y("div", {
+    className: "fixed top-4 right-4 bg-red-500 text-white p-2 rounded shadow-lg z-50"
+  }, message);
+};
+const showSnackbar = message => {
+  const snackbarRoot = document.createElement("div");
+  snackbarRoot.id = "snackbar-root";
+  document.body.appendChild(snackbarRoot);
+  D(y(Snackbar, {
+    message: message
+  }), snackbarRoot);
 };
 
 const App = () => {
@@ -172,6 +197,8 @@ const App = () => {
         setUuid(data.message.uuid);
         localStorage.setItem("uuid", data.message.uuid);
         setActiveTab("Submit");
+      } else {
+        showSnackbar("An error occured.");
       }
     }).finally(() => {
       setIsLoading(false);
@@ -262,6 +289,8 @@ const App = () => {
         setProblems(problemList);
         setSelectedProblem(data.message.unsolved.challenge_name);
       }
+    }).catch(e => {
+      showSnackbar("An error occured. Try again later or refesh the page.");
     }).finally(() => {
       setIsLoading(false);
     });
@@ -353,7 +382,9 @@ const App = () => {
   }, uuid)), y("div", {
     onClick: () => setActiveTab("ID"),
     className: "text-blue-500 cursor-pointer"
-  }, "Change")), y("textarea", {
+  }, "Change")), selectedProblem && y("div", {
+    className: "p-1 text-slate-600"
+  }, problems.find(p => p.name === selectedProblem).prompt), y("textarea", {
     type: "text",
     value: prompt,
     onChange: e => setPrompt(e.target.value),

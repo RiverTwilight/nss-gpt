@@ -4,6 +4,7 @@ import ProgressBar from "../components/progress";
 import Hero from "../components/hero";
 import Footer from "../components/footer";
 import Result from "../components/result";
+import { showSnackbar } from "../components/SnackBar";
 
 const App = () => {
 	const [activeTab, setActiveTab] = useState("Submit");
@@ -88,6 +89,8 @@ const App = () => {
 					setUuid(data.message.uuid);
 					localStorage.setItem("uuid", data.message.uuid);
 					setActiveTab("Submit");
+				} else {
+					showSnackbar("An error occured.");
 				}
 			})
 			.finally(() => {
@@ -191,6 +194,9 @@ const App = () => {
 					setProblems(problemList);
 					setSelectedProblem(data.message.unsolved.challenge_name);
 				}
+			})
+			.catch((e) => {
+				showSnackbar("An error occured. Try again later or refesh the page.");
 			})
 			.finally(() => {
 				setIsLoading(false);
@@ -312,9 +318,17 @@ const App = () => {
 											Change
 										</div>
 									</div>
-									<div className="p-1 text-slate-600">
-										{problem.prompt}
-									</div>
+									{selectedProblem && (
+										<div className="p-1 text-slate-600">
+											{
+												problems.find(
+													(p) =>
+														p.name ===
+														selectedProblem
+												).prompt
+											}
+										</div>
+									)}
 									{/* <div className="flex mt-2 p-1 bg-slate-200 rounded">
 										<button
 											onClick={() =>
