@@ -7,10 +7,10 @@ const Footer = () => {
 				href="https://github.com/rivertwilght"
 				className="cursor-pointer"
 			>
-				By @RiverTwilight
+				Designed By @RiverTwilight
 			</a>{" "}
 			·{" "}
-			<a href="https://nssctf.vip" className="underline cursor-pointer">
+			<a href="https://ctfer.vip" className="underline cursor-pointer">
 				NSSCTF
 			</a>
 		</div>
