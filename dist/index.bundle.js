@@ -383,9 +383,9 @@ const App = () => {
   }, uuid)), y("div", {
     onClick: () => setActiveTab("ID"),
     className: "text-blue-500 cursor-pointer"
-  }, "Change")), selectedProblem && y("div", {
+  }, "Change")), y("div", {
     className: "px-1 py-2 text-slate-600"
-  }, problems.find(p => p.name === selectedProblem).prompt), y("textarea", {
+  }, selectedProblem ? problems.find(p => p.name === selectedProblem).prompt : " "), y("textarea", {
     type: "text",
     value: prompt,
     onChange: e => setPrompt(e.target.value),

@@ -325,17 +325,17 @@ const App = () => {
 											Change
 										</div>
 									</div>
-									{selectedProblem && (
-										<div className="px-1 py-2 text-slate-600">
-											{
-												problems.find(
+
+									<div className="px-1 py-2 text-slate-600">
+										{selectedProblem
+											? problems.find(
 													(p) =>
 														p.name ===
 														selectedProblem
-												).prompt
-											}
-										</div>
-									)}
+											  ).prompt
+											: " "}
+									</div>
+
 									{/* <div className="flex mt-2 p-1 bg-slate-200 rounded">
 										<button
 											onClick={() =>
