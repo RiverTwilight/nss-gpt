@@ -384,12 +384,12 @@ const App = () => {
     onClick: () => setActiveTab("ID"),
     className: "text-blue-500 cursor-pointer"
   }, "Change")), selectedProblem && y("div", {
-    className: "p-1 text-slate-600"
+    className: "px-1 py-2 text-slate-600"
   }, problems.find(p => p.name === selectedProblem).prompt), y("textarea", {
     type: "text",
     value: prompt,
     onChange: e => setPrompt(e.target.value),
-    className: "border p-2 mt-2 w-full min-h-[4em] flex-grow",
+    className: "border p-2 w-full min-h-[4em] flex-grow",
     placeholder: "Prompt"
   }), y("div", {
     className: "flex flex-row-reverse justify-between mt-4"
