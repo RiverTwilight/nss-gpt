@@ -312,6 +312,9 @@ const App = () => {
 											Change
 										</div>
 									</div>
+									<div className="p-1 text-slate-600">
+										{problem.prompt}
+									</div>
 									{/* <div className="flex mt-2 p-1 bg-slate-200 rounded">
 										<button
 											onClick={() =>
