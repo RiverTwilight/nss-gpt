@@ -6,6 +6,8 @@ import Footer from "../components/footer";
 import Result from "../components/result";
 import { showSnackbar } from "../components/SnackBar";
 
+const SCORE_REFRESH_FREQUENCY = 30000;
+
 const App = () => {
 	const [activeTab, setActiveTab] = useState("Submit");
 	const [selectedProblem, setSelectedProblem] = useState("");
@@ -33,7 +35,7 @@ const App = () => {
 			setInterval(() => {
 				let currentId = uuid;
 				getScore(currentId);
-			}, 10000);
+			}, SCORE_REFRESH_FREQUENCY);
 		}
 	}, [uuid]);
 
@@ -196,7 +198,9 @@ const App = () => {
 				}
 			})
 			.catch((e) => {
-				showSnackbar("An error occured. Try again later or refesh the page.");
+				showSnackbar(
+					"An error occured. Try again later or refesh the page."
+				);
 			})
 			.finally(() => {
 				setIsLoading(false);
@@ -256,46 +260,49 @@ const App = () => {
 							<div
 								className={`transition-all flex max-h-[600px]`}
 							>
-								<div className="w-[200px] overflow-auto">
-									<ul>
-										{problems.map((problem) => {
-											return (
-												<li
-													key={problem.name}
-													onClick={() => {
-														setSelectedProblem(
-															problem.name
-														);
-													}}
-													className="py-2 px-3 cursor-pointer flex justify-between hover:bg-slate-100"
-												>
-													<span
-														className={`${
-															selectedProblem ===
-																problem.name &&
-															"font-semibold text-blue-600"
-														}`}
+								{problems.length > 0 && (
+									<div className="w-[200px] overflow-auto">
+										<ul>
+											{problems.map((problem) => {
+												return (
+													<li
+														key={problem.name}
+														onClick={() => {
+															setSelectedProblem(
+																problem.name
+															);
+														}}
+														className="py-2 px-3 cursor-pointer flex justify-between hover:bg-slate-100"
 													>
-														{problem.name}
-													</span>
-													{problem.solved && (
-														<div className="">
-															<svg
-																xmlns="http://www.w3.org/2000/svg"
-																height="24"
-																className="fill-green-400"
-																viewBox="0 -960 960 960"
-																width="24"
-															>
-																<path d="m421-298 283-283-46-45-237 237-120-120-45 45 165 166Zm59 218q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z" />
-															</svg>
-														</div>
-													)}
-												</li>
-											);
-										})}
-									</ul>
-								</div>
+														<span
+															className={`${
+																selectedProblem ===
+																	problem.name &&
+																"font-semibold text-blue-600"
+															}`}
+														>
+															{problem.name}
+														</span>
+														{problem.solved && (
+															<div className="">
+																<svg
+																	xmlns="http://www.w3.org/2000/svg"
+																	height="24"
+																	className="fill-green-400"
+																	viewBox="0 -960 960 960"
+																	width="24"
+																>
+																	<path d="m421-298 283-283-46-45-237 237-120-120-45 45 165 166Zm59 218q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z" />
+																</svg>
+															</div>
+														)}
+													</li>
+												);
+											})}
+										</ul>
+									</div>
+								)}
+
 								<div className="w-full px-4 py-2 flex flex-col">
 									<div className=" bg-slate-200 flex px-2 fill-slate-400 justify-between  p-2 rounded">
 										<div className="flex gap-2">

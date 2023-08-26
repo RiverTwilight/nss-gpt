@@ -122,6 +122,7 @@ const showSnackbar = message => {
   }), snackbarRoot);
 };
 
+const SCORE_REFRESH_FREQUENCY = 30000;
 const App = () => {
   const [activeTab, setActiveTab] = h("Submit");
   const [selectedProblem, setSelectedProblem] = h("");
@@ -147,7 +148,7 @@ const App = () => {
       setInterval(() => {
         let currentId = uuid;
         getScore(currentId);
-      }, 10000);
+      }, SCORE_REFRESH_FREQUENCY);
     }
   }, [uuid]);
   const handlePromptSubmit = id => {
@@ -342,7 +343,7 @@ const App = () => {
     className: "py-4"
   }, activeTab === "Submit" && y("div", {
     className: `transition-all flex max-h-[600px]`
-  }, y("div", {
+  }, problems.length > 0 && y("div", {
     className: "w-[200px] overflow-auto"
   }, y("ul", null, problems.map(problem => {
     return y("li", {
