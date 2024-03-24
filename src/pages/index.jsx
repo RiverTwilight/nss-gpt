@@ -96,7 +96,7 @@ const App = () => {
 					localStorage.setItem("uuid", data.message.uuid);
 					setActiveTab("Submit");
 				} else {
-					showSnackbar("An error occured.");
+					showSnackbar(data.message.error);
 				}
 			})
 			.finally(() => {
@@ -208,7 +208,6 @@ const App = () => {
 	useEffect(() => {
 		window.addEventListener("keydown", handleKeyDown);
 
-		// Cleanup function to remove the listener when the component unmounts
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 		};

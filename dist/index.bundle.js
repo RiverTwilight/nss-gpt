@@ -110,8 +110,10 @@ const Snackbar = ({
     return () => clearTimeout(timer);
   }, []);
   return y("div", {
-    className: "fixed top-4 right-4 bg-red-500 text-white p-2 rounded shadow-lg z-50"
-  }, message);
+    className: "fixed flex justify-center top-4 right-0 left-0 z-50"
+  }, y("div", {
+    className: "bg-red-500 text-white px-4 py-2 rounded shadow-lg"
+  }, message));
 };
 const showSnackbar = message => {
   const snackbarRoot = document.createElement("div");
@@ -209,7 +211,7 @@ const App = () => {
         localStorage.setItem("uuid", data.message.uuid);
         setActiveTab("Submit");
       } else {
-        showSnackbar("An error occured.");
+        showSnackbar(data.message.error);
       }
     }).finally(() => {
       setIsLoading(false);
@@ -301,8 +303,6 @@ const App = () => {
   };
   p(() => {
     window.addEventListener("keydown", handleKeyDown);
-
-    // Cleanup function to remove the listener when the component unmounts
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };

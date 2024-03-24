@@ -713,6 +713,10 @@ video {
   width: 0.5rem;
 }
 
+.max-w-sm {
+  max-width: 24rem;
+}
+
 .flex-grow {
   flex-grow: 1;
 }
