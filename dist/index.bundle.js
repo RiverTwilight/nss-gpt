@@ -290,9 +290,9 @@ const App = () => {
     };
   }, []);
   return y("div", {
-    className: "flex flex-col"
+    className: "flex flex-col mt-[10vh] w-full justify-start md:max-w-3xl md:mt-[20vh]"
   }, y("main", {
-    className: "flex-grow w-[764px] mt-[20vh]"
+    className: "md:flex-grow px-2"
   }, y(Hero, null), y(ProgressBar, {
     progress: score,
     total: 43200
@@ -333,10 +333,12 @@ const App = () => {
   })), y("section", {
     className: "py-2"
   }, activeTab === "Submit" && y("div", {
-    className: `transition-all flex max-h-[600px]`
+    className: `transition-all md:flex max-h-[600px]`
   }, problems.length > 0 && y("div", {
-    className: " w-72 overflow-y-auto"
-  }, y("ul", null, problems.map(problem => {
+    className: "overflow-x-auto md:w-72"
+  }, y("ul", {
+    className: "w-full flex gap-1 md:block"
+  }, problems.map(problem => {
     return y("li", {
       key: problem.name,
       onClick: () => {
@@ -344,7 +346,7 @@ const App = () => {
       },
       className: "py-2 px-3 cursor-pointer flex justify-between hover:bg-slate-100"
     }, y("span", {
-      className: `${selectedProblem === problem.name && "font-semibold text-blue-600"}`
+      className: `whitespace-nowrap ${selectedProblem === problem.name && " font-semibold text-blue-600"}`
     }, problem.name), problem.solved && y("div", {
       className: ""
     }, y("svg", {
@@ -380,7 +382,7 @@ const App = () => {
     type: "text",
     value: prompt,
     onChange: e => setPrompt(e.target.value),
-    className: "border p-2 w-full min-h-[4em] flex-grow rounded",
+    className: "border flex-grow p-2 w-full min-h-[4em] rounded",
     placeholder: "Prompt"
   }), y("div", {
     className: "flex flex-row-reverse justify-between mt-4 items-center"

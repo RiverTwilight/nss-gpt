@@ -202,8 +202,8 @@ const App = () => {
 	}, []);
 
 	return (
-		<div className="flex flex-col">
-			<main className="flex-grow w-[764px] mt-[20vh]">
+		<div className="flex flex-col mt-[10vh] w-full justify-start md:max-w-3xl md:mt-[20vh]">
+			<main className="md:flex-grow px-2">
 				<Hero />
 				<ProgressBar progress={score} total={43200} />
 
@@ -252,11 +252,11 @@ const App = () => {
 					<section className="py-2">
 						{activeTab === "Submit" && (
 							<div
-								className={`transition-all flex max-h-[600px]`}
+								className={`transition-all md:flex max-h-[600px]`}
 							>
 								{problems.length > 0 && (
-									<div className=" w-72 overflow-y-auto">
-										<ul>
+									<div className="overflow-x-auto md:w-72">
+										<ul className="w-full flex gap-1 md:block">
 											{problems.map((problem) => {
 												return (
 													<li
@@ -269,10 +269,10 @@ const App = () => {
 														className="py-2 px-3 cursor-pointer flex justify-between hover:bg-slate-100"
 													>
 														<span
-															className={`${
+															className={`whitespace-nowrap ${
 																selectedProblem ===
 																	problem.name &&
-																"font-semibold text-blue-600"
+																" font-semibold text-blue-600"
 															}`}
 														>
 															{problem.name}
@@ -363,7 +363,7 @@ const App = () => {
 											onChange={(e) =>
 												setPrompt(e.target.value)
 											}
-											className="border p-2 w-full min-h-[4em] flex-grow rounded"
+											className="border flex-grow p-2 w-full min-h-[4em] rounded"
 											placeholder="Prompt"
 										/>
 										<div className="flex flex-row-reverse justify-between mt-4 items-center">
