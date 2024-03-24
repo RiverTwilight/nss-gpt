@@ -1,5 +1,7 @@
 import { h, Component, render, Fragment } from "preact";
 import { useState, useEffect } from "preact/hooks";
+import { FETCH_PARAMATERS, REQUEST_HEADER } from "../pages";
+import siteConfig from "../../site.config";
 
 const Result = ({ submitId, uuid }) => {
 	const [recentSubmitRes, setRecentSubmitRes] = useState(null);
@@ -11,21 +13,15 @@ const Result = ({ submitId, uuid }) => {
 	}, [submitId]);
 
 	const getSubmitResult = (id) => {
-		fetch("https://prompt.wd-ljt.com/get_result/", {
+		fetch(`${siteConfig.api_host}/get_result/`, {
 			method: "POST",
-			headers: {
-				"content-type": "application/json",
-				"sec-fetch-mode": "cors",
-				"sec-fetch-site": "same-origin",
-			},
-			referrer: "https://prompt.wd-ljt.com/",
+			referrer: siteConfig.api_host,
 			referrerPolicy: "strict-origin-when-cross-origin",
 			body: JSON.stringify({
 				uuid: uuid,
 				submit_id: id,
 			}),
-			mode: "cors",
-			credentials: "include",
+			...FETCH_PARAMATERS,
 		})
 			.then((response) => response.json())
 			.then((data) => {

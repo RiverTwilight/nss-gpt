@@ -1,16 +1,13 @@
+import siteConfig from "../../site.config";
+import { FETCH_PARAMATERS } from "../pages";
+
 const getProblems = (id) => {
-	fetch("https://prompt.wd-ljt.com/challenge/", {
+	fetch(`${siteConfig.api_host}/challenge/`, {
 		method: "POST",
-		headers: {
-			"content-type": "application/json",
-			"sec-fetch-mode": "cors",
-			"sec-fetch-site": "same-origin",
-		},
 		referrer: "https://prompt.wd-ljt.com/",
 		referrerPolicy: "strict-origin-when-cross-origin",
 		body: JSON.stringify({ uuid: id }),
-		mode: "cors",
-		credentials: "include",
+		...FETCH_PARAMATERS,
 	})
 		.then((response) => response.json())
 		.then((data) => {

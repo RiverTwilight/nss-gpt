@@ -120,9 +120,9 @@ const App = () => {
 	const getScore = (id) => {
 		fetch(`${siteConfig.api_host}/settle/`, {
 			method: "POST",
-			referrer: "https://prompt.wd-ljt.com/",
-			...FETCH_PARAMATERS,
+			referrer: siteConfig.api_host,
 			body: JSON.stringify({ uuid: id }),
+			...FETCH_PARAMATERS,
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -249,13 +249,13 @@ const App = () => {
 							);
 						})}
 					</div>
-					<section className="py-4">
+					<section className="py-2">
 						{activeTab === "Submit" && (
 							<div
 								className={`transition-all flex max-h-[600px]`}
 							>
 								{problems.length > 0 && (
-									<div className="w-[200px] overflow-auto">
+									<div className=" w-72 overflow-y-auto">
 										<ul>
 											{problems.map((problem) => {
 												return (
@@ -297,40 +297,43 @@ const App = () => {
 									</div>
 								)}
 
-								<div className="w-full px-4 py-2 flex flex-col">
-									<div className=" bg-slate-200 flex px-2 fill-slate-400 justify-between p-2 rounded">
-										<div className="flex gap-2">
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												height="24"
-												viewBox="0 -960 960 960"
-												width="24"
+								{!!selectedProblem ? (
+									<div className="w-full px-4 py-2 flex flex-col">
+										<div className=" bg-slate-200 flex px-2 fill-slate-400 justify-between p-2 rounded">
+											<div className="flex gap-2">
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													height="24"
+													viewBox="0 -960 960 960"
+													width="24"
+												>
+													<path d="M140-80q-24 0-42-18t-18-42v-480q0-24 18-42t42-18h250v-140q0-24 18-42t42.411-18h59.178Q534-880 552-862t18 42v140h250q24 0 42 18t18 42v480q0 24-18 42t-42 18H140Zm0-60h680v-480H570v30q0 28-18 44t-42.411 16h-59.178Q426-530 408-546t-18-44v-30H140v480Zm92-107h239v-14q0-18-9-32t-23-19q-32-11-50-14.5t-35-3.5q-19 0-40.5 4.5T265-312q-15 5-24 19t-9 32v14Zm336-67h170v-50H568v50Zm-214-50q22.5 0 38.25-15.75T408-418q0-22.5-15.75-38.25T354-472q-22.5 0-38.25 15.75T300-418q0 22.5 15.75 38.25T354-364Zm214-63h170v-50H568v50ZM450-590h60v-230h-60v230Zm30 210Z" />
+												</svg>
+												<div className="text-slate-400">
+													{uuid}
+												</div>
+											</div>
+											<div
+												onClick={() =>
+													setActiveTab("ID")
+												}
+												className="text-blue-500 cursor-pointer"
 											>
-												<path d="M140-80q-24 0-42-18t-18-42v-480q0-24 18-42t42-18h250v-140q0-24 18-42t42.411-18h59.178Q534-880 552-862t18 42v140h250q24 0 42 18t18 42v480q0 24-18 42t-42 18H140Zm0-60h680v-480H570v30q0 28-18 44t-42.411 16h-59.178Q426-530 408-546t-18-44v-30H140v480Zm92-107h239v-14q0-18-9-32t-23-19q-32-11-50-14.5t-35-3.5q-19 0-40.5 4.5T265-312q-15 5-24 19t-9 32v14Zm336-67h170v-50H568v50Zm-214-50q22.5 0 38.25-15.75T408-418q0-22.5-15.75-38.25T354-472q-22.5 0-38.25 15.75T300-418q0 22.5 15.75 38.25T354-364Zm214-63h170v-50H568v50ZM450-590h60v-230h-60v230Zm30 210Z" />
-											</svg>
-											<div className="text-slate-400">
-												{uuid}
+												Change
 											</div>
 										</div>
-										<div
-											onClick={() => setActiveTab("ID")}
-											className="text-blue-500 cursor-pointer"
-										>
-											Change
+
+										<div className="px-1 py-2 text-slate-600">
+											{selectedProblem
+												? problems.find(
+														(p) =>
+															p.name ===
+															selectedProblem
+												  ).prompt
+												: " "}
 										</div>
-									</div>
 
-									<div className="px-1 py-2 text-slate-600">
-										{selectedProblem
-											? problems.find(
-													(p) =>
-														p.name ===
-														selectedProblem
-											  ).prompt
-											: " "}
-									</div>
-
-									{/* <div className="flex mt-2 p-1 bg-slate-200 rounded">
+										{/* <div className="flex mt-2 p-1 bg-slate-200 rounded">
 										<button
 											onClick={() =>
 												setActiveMode("Unicode")
@@ -354,39 +357,50 @@ const App = () => {
 											ASCII
 										</button>
 									</div> */}
-									<textarea
-										type="text"
-										value={prompt}
-										onChange={(e) =>
-											setPrompt(e.target.value)
-										}
-										className="border p-2 w-full min-h-[4em] flex-grow rounded"
-										placeholder="Prompt"
-									/>
-									<div className="flex flex-row-reverse justify-between mt-4 items-center">
-										<div className="gap-2 flex flex-row-reverse">
-											<button
-												onClick={() =>
-													handlePromptSubmit(uuid)
-												}
-												className={`px-4 uppercase font-semibold rounded py-2 ${
-													isLoading ||
-													!!!selectedProblem
-														? "bg-gray-400"
-														: "bg-blue-600"
-												} text-white`}
-											>
-												Submit
-											</button>
-											<span className="font-mono text-slate-400 self-center">
-												Shift + Enter
-											</span>
-										</div>
-										<div className="text-blue-600">
-											{selectedProblem}
+										<textarea
+											type="text"
+											value={prompt}
+											onChange={(e) =>
+												setPrompt(e.target.value)
+											}
+											className="border p-2 w-full min-h-[4em] flex-grow rounded"
+											placeholder="Prompt"
+										/>
+										<div className="flex flex-row-reverse justify-between mt-4 items-center">
+											<div className="gap-2 flex flex-row-reverse">
+												<button
+													onClick={() =>
+														handlePromptSubmit(uuid)
+													}
+													className={`px-4 uppercase font-semibold rounded py-2 ${
+														isLoading ||
+														!!!selectedProblem
+															? "bg-gray-400"
+															: "bg-blue-600"
+													} text-white`}
+												>
+													Submit
+												</button>
+												<span className="font-mono text-slate-400 self-center">
+													Shift + Enter
+												</span>
+											</div>
+											<div className="text-blue-600">
+												{selectedProblem}
+											</div>
 										</div>
 									</div>
-								</div>
+								) : (
+									<div className="min-h-[600px] w-full h-full flex flex-col justify-center items-center">
+										<div className="font-bold text-2xl">
+											No Selected Problem
+										</div>
+										<div className="text-slate-500">
+											Select a problem from sidebar to
+											start
+										</div>
+									</div>
+								)}
 							</div>
 						)}
 
@@ -499,3 +513,5 @@ const App = () => {
 
 // Render the App into the DOM
 render(<App />, document.body);
+
+export { REQUEST_HEADER, FETCH_PARAMATERS };

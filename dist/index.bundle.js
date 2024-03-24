@@ -56,6 +56,16 @@ const Footer = () => {
   }, "NSSCTF"));
 };
 
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+var site_config = {
+	api_host: "https://gptchallenge.wd-ljt.com",
+};
+
+var siteConfig = /*@__PURE__*/getDefaultExportFromCjs(site_config);
+
 const Result = ({
   submitId,
   uuid
@@ -67,21 +77,15 @@ const Result = ({
     }
   }, [submitId]);
   const getSubmitResult = id => {
-    fetch("https://prompt.wd-ljt.com/get_result/", {
+    fetch(`${siteConfig.api_host}/get_result/`, {
       method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin"
-      },
-      referrer: "https://prompt.wd-ljt.com/",
+      referrer: siteConfig.api_host,
       referrerPolicy: "strict-origin-when-cross-origin",
       body: JSON.stringify({
         uuid: uuid,
         submit_id: id
       }),
-      mode: "cors",
-      credentials: "include"
+      ...FETCH_PARAMATERS
     }).then(response => response.json()).then(data => {
       setRecentSubmitRes({
         score: data.message.score,
@@ -123,16 +127,6 @@ const showSnackbar = message => {
     message: message
   }), snackbarRoot);
 };
-
-function getDefaultExportFromCjs (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
-var site_config = {
-	api_host: "https://gptchallenge.wd-ljt.com",
-};
-
-var siteConfig = /*@__PURE__*/getDefaultExportFromCjs(site_config);
 
 const SCORE_REFRESH_FREQUENCY = 30000;
 const REQUEST_HEADER = {
@@ -231,11 +225,11 @@ const App = () => {
   const getScore = id => {
     fetch(`${siteConfig.api_host}/settle/`, {
       method: "POST",
-      referrer: "https://prompt.wd-ljt.com/",
-      ...FETCH_PARAMATERS,
+      referrer: siteConfig.api_host,
       body: JSON.stringify({
         uuid: id
-      })
+      }),
+      ...FETCH_PARAMATERS
     }).then(response => response.json()).then(data => {
       if (data.code === 200) {
         setScore(data.message.score);
@@ -337,11 +331,11 @@ const App = () => {
       className: "bg-gray-200 w-full h-full rounded-br-xl"
     })));
   })), y("section", {
-    className: "py-4"
+    className: "py-2"
   }, activeTab === "Submit" && y("div", {
     className: `transition-all flex max-h-[600px]`
   }, problems.length > 0 && y("div", {
-    className: "w-[200px] overflow-auto"
+    className: " w-72 overflow-y-auto"
   }, y("ul", null, problems.map(problem => {
     return y("li", {
       key: problem.name,
@@ -362,7 +356,7 @@ const App = () => {
     }, y("path", {
       d: "m421-298 283-283-46-45-237 237-120-120-45 45 165 166Zm59 218q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z"
     }))));
-  }))), y("div", {
+  }))), !!selectedProblem ? y("div", {
     className: "w-full px-4 py-2 flex flex-col"
   }, y("div", {
     className: " bg-slate-200 flex px-2 fill-slate-400 justify-between p-2 rounded"
@@ -399,7 +393,13 @@ const App = () => {
     className: "font-mono text-slate-400 self-center"
   }, "Shift + Enter")), y("div", {
     className: "text-blue-600"
-  }, selectedProblem)))), activeTab === "ID" && y("div", {
+  }, selectedProblem))) : y("div", {
+    className: "min-h-[600px] w-full h-full flex flex-col justify-center items-center"
+  }, y("div", {
+    className: "font-bold text-2xl"
+  }, "No Selected Problem"), y("div", {
+    className: "text-slate-500"
+  }, "Select a problem from sidebar to start"))), activeTab === "ID" && y("div", {
     className: `transition-all px-4 py-2`
   }, y("input", {
     type: "text",
@@ -465,3 +465,6 @@ const App = () => {
 
 // Render the App into the DOM
 D(y(App, null), document.body);
+
+exports.FETCH_PARAMATERS = FETCH_PARAMATERS;
+exports.REQUEST_HEADER = REQUEST_HEADER;
