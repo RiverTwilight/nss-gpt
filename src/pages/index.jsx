@@ -6,7 +6,15 @@ import Footer from "../components/footer";
 import Result from "../components/result";
 import { showSnackbar } from "../components/SnackBar";
 
+import siteConfig from "../../site.config";
+
 const SCORE_REFRESH_FREQUENCY = 30000;
+
+const REQUEST_HEADER = {
+	"content-type": "application/json",
+	"sec-fetch-mode": "cors",
+	"sec-fetch-site": "same-origin",
+};
 
 const App = () => {
 	const [activeTab, setActiveTab] = useState("Submit");
@@ -45,11 +53,7 @@ const App = () => {
 		setIsLoading(true);
 		fetch("https://prompt.wd-ljt.com/submit/", {
 			method: "POST",
-			headers: {
-				"content-type": "application/json",
-				"sec-fetch-mode": "cors",
-				"sec-fetch-site": "same-origin",
-			},
+			headers: REQUEST_HEADER,
 			referrer: "https://prompt.wd-ljt.com/",
 			referrerPolicy: "strict-origin-when-cross-origin",
 			body: JSON.stringify({
@@ -72,14 +76,10 @@ const App = () => {
 	const handleGenerateUUID = () => {
 		setIsLoading(true);
 
-		fetch("https://prompt.wd-ljt.com/get_user_id/", {
+		fetch(`${siteConfig.api_host}/get_user_id/`, {
 			method: "POST",
-			headers: {
-				"content-type": "application/json",
-				"sec-fetch-mode": "cors",
-				"sec-fetch-site": "same-origin",
-			},
-			referrer: "https://prompt.wd-ljt.com/",
+			headers: REQUEST_HEADER,
+			referrer: siteConfig.api_host,
 			referrerPolicy: "strict-origin-when-cross-origin",
 			body: JSON.stringify({ nss_key: nssKey, nss_secret: nssSecret }),
 			mode: "cors",
@@ -149,14 +149,10 @@ const App = () => {
 	};
 
 	const getProblems = (id) => {
-		fetch("https://prompt.wd-ljt.com/challenge/", {
+		fetch(`${siteConfig.api_host}/challenge/`, {
 			method: "POST",
-			headers: {
-				"content-type": "application/json",
-				"sec-fetch-mode": "cors",
-				"sec-fetch-site": "same-origin",
-			},
-			referrer: "https://prompt.wd-ljt.com/",
+			headers: REQUEST_HEADER,
+			referrer: siteConfig.api_host,
 			referrerPolicy: "strict-origin-when-cross-origin",
 			body: JSON.stringify({ uuid: id }),
 			mode: "cors",
@@ -228,32 +224,40 @@ const App = () => {
 				<Hero />
 				<ProgressBar progress={score} total={43200} />
 
-				<div className="mt-4 w-full bg-white rounded-xl shadow-lg">
+				<div className="mt-4 w-full bg-white rounded-xl shadow-lg overflow-hidden">
 					<div className="w-full flex mb-4">
 						{[
 							{ value: "Submit", label: "Submit" },
 							{ value: "ID", label: "Register" },
 							{ value: "History", label: "History" },
-						].map((tab) => (
-							<div className="relative w-full">
-								<button
-									key={tab}
-									onClick={() => setActiveTab(tab.value)}
-									className={`w-full text-slate-500 px-4 py-3 ${
-										activeTab === tab
-											? "text-slate-950"
-											: ""
-									}`}
-								>
-									{tab.label}
-								</button>
-								{activeTab === tab.value && (
-									<div className="flex justify-center absolute bottom-0 right-0 left-0">
-										<span className="h-[4px] w-6 bg-blue-500"></span>
-									</div>
-								)}
-							</div>
-						))}
+						].map((tab, i) => {
+							let isActive = activeTab === tab.value;
+							return (
+								<div className={`bg-gray-200 relative w-full`}>
+									<button
+										key={tab}
+										onClick={() => setActiveTab(tab.value)}
+										className={`w-full text-slate-500 px-4 py-3 ${
+											isActive
+												? "text-slate-950 bg-white rounded-t-xl"
+												: "bg-gray-200"
+										}`}
+									>
+										{tab.label}
+									</button>
+									{activeTab === tab.value && i < 2 && (
+										<div className="bg-white z-20 w-2 h-2 absolute bottom-0 right-0 translate-x-2">
+											<div className="bg-gray-200 w-full h-full rounded-bl-xl"></div>
+										</div>
+									)}
+									{activeTab === tab.value && i > 0 && (
+										<div className="bg-white z-20 w-2 h-2 absolute bottom-0 left-0 -translate-x-2">
+											<div className="bg-gray-200 w-full h-full rounded-br-xl"></div>
+										</div>
+									)}
+								</div>
+							);
+						})}
 					</div>
 					<section className="py-4">
 						{activeTab === "Submit" && (
@@ -304,7 +308,7 @@ const App = () => {
 								)}
 
 								<div className="w-full px-4 py-2 flex flex-col">
-									<div className=" bg-slate-200 flex px-2 fill-slate-400 justify-between  p-2 rounded">
+									<div className=" bg-slate-200 flex px-2 fill-slate-400 justify-between p-2 rounded">
 										<div className="flex gap-2">
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
@@ -366,10 +370,10 @@ const App = () => {
 										onChange={(e) =>
 											setPrompt(e.target.value)
 										}
-										className="border p-2 w-full min-h-[4em] flex-grow"
+										className="border p-2 w-full min-h-[4em] flex-grow rounded"
 										placeholder="Prompt"
 									/>
-									<div className="flex flex-row-reverse justify-between mt-4">
+									<div className="flex flex-row-reverse justify-between mt-4 items-center">
 										<div className="gap-2 flex flex-row-reverse">
 											<button
 												onClick={() =>
@@ -402,7 +406,7 @@ const App = () => {
 									type="text"
 									value={nssKey}
 									onChange={(e) => setNssKey(e.target.value)}
-									className="border p-2 w-full mb-2"
+									className="border p-2 w-full mb-2 rounded"
 									placeholder="NSS Key"
 								/>
 								<input
@@ -411,7 +415,7 @@ const App = () => {
 									onChange={(e) =>
 										setNssSecret(e.target.value)
 									}
-									className="border p-2 w-full"
+									className="border p-2 w-full rounded"
 									placeholder="NSS Secret"
 								/>
 								<div className="flex flex-row-reverse justify-between gap-2 mt-4">
@@ -428,7 +432,7 @@ const App = () => {
 									</button>
 
 									<div className="tooltip-wrapper text-slate-400 self-center cursor-pointer hover:text-slate-700 transition-all">
-										<span className="tooltip-text">
+										<span className="tooltip-text p-2">
 											You can get the apply for key and
 											secret at
 											https://www.nssctf.cn/user/range/api
@@ -487,7 +491,7 @@ const App = () => {
 								<div className="text-center">
 									<button
 										onClick={handleGetHistory}
-										className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+										className="mt-4 px-4 py-2 bg-blue-600 text-white rounded uppercase"
 									>
 										Refresh History
 									</button>
