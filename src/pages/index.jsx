@@ -16,6 +16,12 @@ const REQUEST_HEADER = {
 	"sec-fetch-site": "same-origin",
 };
 
+const FETCH_PARAMATERS = {
+	referrerPolicy: "strict-origin-when-cross-origin",
+	mode: "cors",
+	credentials: "include",
+};
+
 const App = () => {
 	const [activeTab, setActiveTab] = useState("Submit");
 	const [selectedProblem, setSelectedProblem] = useState("");
@@ -80,10 +86,8 @@ const App = () => {
 			method: "POST",
 			headers: REQUEST_HEADER,
 			referrer: siteConfig.api_host,
-			referrerPolicy: "strict-origin-when-cross-origin",
 			body: JSON.stringify({ nss_key: nssKey, nss_secret: nssSecret }),
-			mode: "cors",
-			credentials: "include",
+			...FETCH_PARAMATERS,
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -101,18 +105,12 @@ const App = () => {
 	};
 
 	const handleGetHistory = () => {
-		fetch("https://prompt.wd-ljt.com/get_history/", {
+		fetch(`${siteConfig.api_host}/get_history/`, {
 			method: "POST",
-			headers: {
-				"content-type": "application/json",
-				"sec-fetch-mode": "cors",
-				"sec-fetch-site": "same-origin",
-			},
-			referrer: "https://prompt.wd-ljt.com/",
-			referrerPolicy: "strict-origin-when-cross-origin",
+			headers: REQUEST_HEADER,
+			referrer: siteConfig.api_host,
 			body: JSON.stringify({ uuid }),
-			mode: "cors",
-			credentials: "include",
+			...FETCH_PARAMATERS,
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -124,7 +122,7 @@ const App = () => {
 	};
 
 	const getScore = (id) => {
-		fetch("https://prompt.wd-ljt.com/settle/", {
+		fetch(`${siteConfig.api_host}/settle/`, {
 			method: "POST",
 			headers: {
 				"content-type": "application/json",
@@ -132,10 +130,8 @@ const App = () => {
 				"sec-fetch-site": "same-origin",
 			},
 			referrer: "https://prompt.wd-ljt.com/",
-			referrerPolicy: "strict-origin-when-cross-origin",
+			...FETCH_PARAMATERS,
 			body: JSON.stringify({ uuid: id }),
-			mode: "cors",
-			credentials: "include",
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -224,8 +220,8 @@ const App = () => {
 				<Hero />
 				<ProgressBar progress={score} total={43200} />
 
-				<div className="mt-4 w-full bg-white rounded-xl shadow-lg overflow-hidden">
-					<div className="w-full flex mb-4">
+				<div className="mt-4 w-full bg-white rounded-xl shadow-lg ">
+					<div className="w-full flex mb-4 rounded-t-xl overflow-hidden">
 						{[
 							{ value: "Submit", label: "Submit" },
 							{ value: "ID", label: "Register" },
@@ -233,7 +229,7 @@ const App = () => {
 						].map((tab, i) => {
 							let isActive = activeTab === tab.value;
 							return (
-								<div className={`bg-gray-200 relative w-full`}>
+								<div className={`bg-gray-200 relative w-full `}>
 									<button
 										key={tab}
 										onClick={() => setActiveTab(tab.value)}
