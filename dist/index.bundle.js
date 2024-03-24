@@ -143,7 +143,8 @@ const REQUEST_HEADER = {
 const FETCH_PARAMATERS = {
   referrerPolicy: "strict-origin-when-cross-origin",
   mode: "cors",
-  credentials: "include"
+  credentials: "include",
+  headers: REQUEST_HEADER
 };
 const App = () => {
   const [activeTab, setActiveTab] = h("Submit");
@@ -176,18 +177,15 @@ const App = () => {
   const handlePromptSubmit = id => {
     if (!!!selectedProblem) return;
     setIsLoading(true);
-    fetch("https://prompt.wd-ljt.com/submit/", {
+    fetch(`${siteConfig.api_host}/submit/`, {
       method: "POST",
-      headers: REQUEST_HEADER,
-      referrer: "https://prompt.wd-ljt.com/",
-      referrerPolicy: "strict-origin-when-cross-origin",
+      referrer: siteConfig.api_host,
       body: JSON.stringify({
         challenge_name: selectedProblem,
         prompt: prompt,
         uuid: id
       }),
-      mode: "cors",
-      credentials: "include"
+      ...FETCH_PARAMATERS
     }).then(response => response.json()).then(data => {
       setRecentSubmitId(data.message.submit_id);
     }).finally(() => {
@@ -198,7 +196,6 @@ const App = () => {
     setIsLoading(true);
     fetch(`${siteConfig.api_host}/get_user_id/`, {
       method: "POST",
-      headers: REQUEST_HEADER,
       referrer: siteConfig.api_host,
       body: JSON.stringify({
         nss_key: nssKey,
@@ -220,7 +217,6 @@ const App = () => {
   const handleGetHistory = () => {
     fetch(`${siteConfig.api_host}/get_history/`, {
       method: "POST",
-      headers: REQUEST_HEADER,
       referrer: siteConfig.api_host,
       body: JSON.stringify({
         uuid
@@ -235,11 +231,6 @@ const App = () => {
   const getScore = id => {
     fetch(`${siteConfig.api_host}/settle/`, {
       method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin"
-      },
       referrer: "https://prompt.wd-ljt.com/",
       ...FETCH_PARAMATERS,
       body: JSON.stringify({
@@ -256,14 +247,11 @@ const App = () => {
   const getProblems = id => {
     fetch(`${siteConfig.api_host}/challenge/`, {
       method: "POST",
-      headers: REQUEST_HEADER,
       referrer: siteConfig.api_host,
-      referrerPolicy: "strict-origin-when-cross-origin",
       body: JSON.stringify({
         uuid: id
       }),
-      mode: "cors",
-      credentials: "include"
+      ...FETCH_PARAMATERS
     }).then(response => response.json()).then(data => {
       if (data.code == 200) {
         let problemList = [];
@@ -315,8 +303,12 @@ const App = () => {
     progress: score,
     total: 43200
   }), y("div", {
-    className: "mt-4 w-full bg-white rounded-xl shadow-lg "
+    className: "mt-4 w-full bg-white rounded-xl shadow-lg relative"
+  }, isLoading && y("div", {
+    className: "absolute top-0 right-0 bottom-0 left-0 bg-white bg-opacity-70 rounded-xl"
   }, y("div", {
+    className: "flex w-full h-full items-center justify-center"
+  }, "Checking Your Answer...")), y("div", {
     className: "w-full flex mb-4 rounded-t-xl overflow-hidden"
   }, [{
     value: "Submit",

@@ -20,6 +20,7 @@ const FETCH_PARAMATERS = {
 	referrerPolicy: "strict-origin-when-cross-origin",
 	mode: "cors",
 	credentials: "include",
+	headers: REQUEST_HEADER,
 };
 
 const App = () => {
@@ -57,18 +58,15 @@ const App = () => {
 		if (!!!selectedProblem) return;
 
 		setIsLoading(true);
-		fetch("https://prompt.wd-ljt.com/submit/", {
+		fetch(`${siteConfig.api_host}/submit/`, {
 			method: "POST",
-			headers: REQUEST_HEADER,
-			referrer: "https://prompt.wd-ljt.com/",
-			referrerPolicy: "strict-origin-when-cross-origin",
+			referrer: siteConfig.api_host,
 			body: JSON.stringify({
 				challenge_name: selectedProblem,
 				prompt: prompt,
 				uuid: id,
 			}),
-			mode: "cors",
-			credentials: "include",
+			...FETCH_PARAMATERS,
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -84,7 +82,6 @@ const App = () => {
 
 		fetch(`${siteConfig.api_host}/get_user_id/`, {
 			method: "POST",
-			headers: REQUEST_HEADER,
 			referrer: siteConfig.api_host,
 			body: JSON.stringify({ nss_key: nssKey, nss_secret: nssSecret }),
 			...FETCH_PARAMATERS,
@@ -107,7 +104,6 @@ const App = () => {
 	const handleGetHistory = () => {
 		fetch(`${siteConfig.api_host}/get_history/`, {
 			method: "POST",
-			headers: REQUEST_HEADER,
 			referrer: siteConfig.api_host,
 			body: JSON.stringify({ uuid }),
 			...FETCH_PARAMATERS,
@@ -124,11 +120,6 @@ const App = () => {
 	const getScore = (id) => {
 		fetch(`${siteConfig.api_host}/settle/`, {
 			method: "POST",
-			headers: {
-				"content-type": "application/json",
-				"sec-fetch-mode": "cors",
-				"sec-fetch-site": "same-origin",
-			},
 			referrer: "https://prompt.wd-ljt.com/",
 			...FETCH_PARAMATERS,
 			body: JSON.stringify({ uuid: id }),
@@ -147,12 +138,9 @@ const App = () => {
 	const getProblems = (id) => {
 		fetch(`${siteConfig.api_host}/challenge/`, {
 			method: "POST",
-			headers: REQUEST_HEADER,
 			referrer: siteConfig.api_host,
-			referrerPolicy: "strict-origin-when-cross-origin",
 			body: JSON.stringify({ uuid: id }),
-			mode: "cors",
-			credentials: "include",
+			...FETCH_PARAMATERS,
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -219,7 +207,14 @@ const App = () => {
 				<Hero />
 				<ProgressBar progress={score} total={43200} />
 
-				<div className="mt-4 w-full bg-white rounded-xl shadow-lg ">
+				<div className="mt-4 w-full bg-white rounded-xl shadow-lg relative">
+					{isLoading && (
+						<div className="absolute top-0 right-0 bottom-0 left-0 bg-white bg-opacity-70 rounded-xl">
+							<div className="flex w-full h-full items-center justify-center">
+								Checking Your Answer...
+							</div>
+						</div>
+					)}
 					<div className="w-full flex mb-4 rounded-t-xl overflow-hidden">
 						{[
 							{ value: "Submit", label: "Submit" },
