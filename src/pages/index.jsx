@@ -381,7 +381,7 @@ const App = () => {
 												>
 													Submit
 												</button>
-												<span className="font-mono text-slate-400 self-center">
+												<span className="font-mono text-slate-400 self-center hidden md:block">
 													Shift + Enter
 												</span>
 											</div>

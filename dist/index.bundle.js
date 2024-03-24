@@ -392,7 +392,7 @@ const App = () => {
     onClick: () => handlePromptSubmit(uuid),
     className: `px-4 uppercase font-semibold rounded py-2 ${isLoading || !!!selectedProblem ? "bg-gray-400" : "bg-blue-600"} text-white`
   }, "Submit"), y("span", {
-    className: "font-mono text-slate-400 self-center"
+    className: "font-mono text-slate-400 self-center hidden md:block"
   }, "Shift + Enter")), y("div", {
     className: "text-blue-600"
   }, selectedProblem))) : y("div", {
