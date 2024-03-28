@@ -18,6 +18,7 @@ const REQUEST_HEADER = {
 
 const FETCH_PARAMATERS = {
 	referrerPolicy: "strict-origin-when-cross-origin",
+	referrer: siteConfig.api_host,
 	mode: "cors",
 	credentials: "include",
 	headers: REQUEST_HEADER,
@@ -60,7 +61,6 @@ const App = () => {
 		setIsLoading(true);
 		fetch(`${siteConfig.api_host}/submit/`, {
 			method: "POST",
-			referrer: siteConfig.api_host,
 			body: JSON.stringify({
 				challenge_name: selectedProblem,
 				prompt: prompt,
@@ -82,8 +82,10 @@ const App = () => {
 
 		fetch(`${siteConfig.api_host}/get_user_id/`, {
 			method: "POST",
-			referrer: siteConfig.api_host,
-			body: JSON.stringify({ nss_key: nssKey, nss_secret: nssSecret }),
+			body: JSON.stringify({
+				nss_key: nssKey.trim(),
+				nss_secret: nssSecret.trim(),
+			}),
 			...FETCH_PARAMATERS,
 		})
 			.then((response) => response.json())
@@ -104,7 +106,6 @@ const App = () => {
 	const handleGetHistory = () => {
 		fetch(`${siteConfig.api_host}/get_history/`, {
 			method: "POST",
-			referrer: siteConfig.api_host,
 			body: JSON.stringify({ uuid }),
 			...FETCH_PARAMATERS,
 		})
@@ -120,7 +121,6 @@ const App = () => {
 	const getScore = (id) => {
 		fetch(`${siteConfig.api_host}/settle/`, {
 			method: "POST",
-			referrer: siteConfig.api_host,
 			body: JSON.stringify({ uuid: id }),
 			...FETCH_PARAMATERS,
 		})
@@ -138,7 +138,6 @@ const App = () => {
 	const getProblems = (id) => {
 		fetch(`${siteConfig.api_host}/challenge/`, {
 			method: "POST",
-			referrer: siteConfig.api_host,
 			body: JSON.stringify({ uuid: id }),
 			...FETCH_PARAMATERS,
 		})
@@ -202,8 +201,8 @@ const App = () => {
 	}, []);
 
 	return (
-		<div className="flex flex-col mt-[10vh] w-full justify-start md:max-w-3xl md:mt-[20vh]">
-			<main className="md:flex-grow px-2">
+		<div className="flex flex-col mt-[10vh] w-full justify-start md:max-w-3xl md:mt-[20vh] px-2">
+			<main className="md:flex-grow ">
 				<Hero />
 				<ProgressBar progress={score} total={43200} />
 
@@ -511,7 +510,6 @@ const App = () => {
 	);
 };
 
-// Render the App into the DOM
 render(<App />, document.body);
 
 export { REQUEST_HEADER, FETCH_PARAMATERS };

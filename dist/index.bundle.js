@@ -49,10 +49,13 @@ const Footer = () => {
     className: "py-4 text-slate-500 text-center font-mono"
   }, y("a", {
     href: "https://github.com/rivertwilight",
-    className: "cursor-pointer"
-  }, "Designed By @RiverTwilight"), " ", "\xB7", " ", y("a", {
+    className: "cursor-pointer px-1"
+  }, "Designed By @RiverTwilight"), "\xB7", y("a", {
+    href: "https://github.com/rivertwilight/nss-gpt",
+    className: "underline cursor-pointer px-1"
+  }, "GitHub"), "\xB7", y("a", {
     href: "https://nssctf.cn",
-    className: "underline cursor-pointer"
+    className: "underline cursor-pointer px-2"
   }, "NSSCTF"));
 };
 
@@ -79,8 +82,6 @@ const Result = ({
   const getSubmitResult = id => {
     fetch(`${siteConfig.api_host}/get_result/`, {
       method: "POST",
-      referrer: siteConfig.api_host,
-      referrerPolicy: "strict-origin-when-cross-origin",
       body: JSON.stringify({
         uuid: uuid,
         submit_id: id
@@ -136,6 +137,7 @@ const REQUEST_HEADER = {
 };
 const FETCH_PARAMATERS = {
   referrerPolicy: "strict-origin-when-cross-origin",
+  referrer: siteConfig.api_host,
   mode: "cors",
   credentials: "include",
   headers: REQUEST_HEADER
@@ -173,7 +175,6 @@ const App = () => {
     setIsLoading(true);
     fetch(`${siteConfig.api_host}/submit/`, {
       method: "POST",
-      referrer: siteConfig.api_host,
       body: JSON.stringify({
         challenge_name: selectedProblem,
         prompt: prompt,
@@ -190,10 +191,9 @@ const App = () => {
     setIsLoading(true);
     fetch(`${siteConfig.api_host}/get_user_id/`, {
       method: "POST",
-      referrer: siteConfig.api_host,
       body: JSON.stringify({
-        nss_key: nssKey,
-        nss_secret: nssSecret
+        nss_key: nssKey.trim(),
+        nss_secret: nssSecret.trim()
       }),
       ...FETCH_PARAMATERS
     }).then(response => response.json()).then(data => {
@@ -211,7 +211,6 @@ const App = () => {
   const handleGetHistory = () => {
     fetch(`${siteConfig.api_host}/get_history/`, {
       method: "POST",
-      referrer: siteConfig.api_host,
       body: JSON.stringify({
         uuid
       }),
@@ -225,7 +224,6 @@ const App = () => {
   const getScore = id => {
     fetch(`${siteConfig.api_host}/settle/`, {
       method: "POST",
-      referrer: siteConfig.api_host,
       body: JSON.stringify({
         uuid: id
       }),
@@ -241,7 +239,6 @@ const App = () => {
   const getProblems = id => {
     fetch(`${siteConfig.api_host}/challenge/`, {
       method: "POST",
-      referrer: siteConfig.api_host,
       body: JSON.stringify({
         uuid: id
       }),
@@ -290,9 +287,9 @@ const App = () => {
     };
   }, []);
   return y("div", {
-    className: "flex flex-col mt-[10vh] w-full justify-start md:max-w-3xl md:mt-[20vh]"
+    className: "flex flex-col mt-[10vh] w-full justify-start md:max-w-3xl md:mt-[20vh] px-2"
   }, y("main", {
-    className: "md:flex-grow px-2"
+    className: "md:flex-grow "
   }, y(Hero, null), y(ProgressBar, {
     progress: score,
     total: 43200
@@ -464,8 +461,6 @@ const App = () => {
     submitId: recentSubmitId
   }), y(Footer, null));
 };
-
-// Render the App into the DOM
 D(y(App, null), document.body);
 
 exports.FETCH_PARAMATERS = FETCH_PARAMATERS;

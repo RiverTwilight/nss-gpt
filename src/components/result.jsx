@@ -15,8 +15,6 @@ const Result = ({ submitId, uuid }) => {
 	const getSubmitResult = (id) => {
 		fetch(`${siteConfig.api_host}/get_result/`, {
 			method: "POST",
-			referrer: siteConfig.api_host,
-			referrerPolicy: "strict-origin-when-cross-origin",
 			body: JSON.stringify({
 				uuid: uuid,
 				submit_id: id,
