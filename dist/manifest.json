@@ -1,1 +1,52 @@
-{"name":"Timeline - Your X (Twitter) History","manifest_version":3,"version":"1.2","icons":{"16":"./icon/android-icon-36x36.png","48":"./icon/android-icon-48x48.png","96":"./icon/android-icon-96x96.png","128":"./icon/icon-128.png"},"options_page":"options.html","permissions":["storage"],"content_scripts":[{"matches":["*://*.twitter.com/*"],"all_frames":true,"js":["content.bundle.cjs.js"]}],"background":{"service_worker":"background.js"},"action":{"default_icon":{"16":"./icon/android-icon-36x36.png","48":"./icon/android-icon-48x48.png"}}}
+{
+	"name": "nss-gpt",
+	"manifest_version": 3,
+	"version": "1.2",
+
+	"icons": [
+		{
+			"src": "/icon/favicon.ico",
+			"type": "image/x-icon",
+			"sizes": "16x16 32x32"
+		},
+		{
+			"src": "/icon/icon-192.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		},
+		{
+			"src": "/icon/icon-512.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		},
+		{
+			"src": "/icon/icon-192-maskable.png",
+			"type": "image/png",
+			"sizes": "192x192",
+			"purpose": "maskable"
+		},
+		{
+			"src": "/icon/icon-512-maskable.png",
+			"type": "image/png",
+			"sizes": "512x512",
+			"purpose": "maskable"
+		}
+	],
+
+	"options_page": "options.html",
+	"permissions": ["storage"],
+	"content_scripts": [
+		{
+			"matches": ["*://*.twitter.com/*"],
+			"all_frames": true,
+			"js": ["content.bundle.cjs.js"]
+		}
+	],
+	"background": { "service_worker": "background.js" },
+	"action": {
+		"default_icon": {
+			"16": "./icon/android-icon-36x36.png",
+			"48": "./icon/android-icon-48x48.png"
+		}
+	}
+}
