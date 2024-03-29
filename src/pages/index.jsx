@@ -33,10 +33,6 @@ const App = () => {
 	const [score, setScore] = useState(0);
 	const [nssKey, setNssKey] = useState("");
 	const [nssSecret, setNssSecret] = useState("");
-	// const [nssKey, setNssKey] = useState("7e4dd3f47adecd02f75c");
-	// const [nssSecret, setNssSecret] = useState(
-	// 	"c396a00f30620c092a9c626d0d9287995aaaba02"
-	// );
 	const [history, setHistory] = useState([]);
 	const [uuid, setUuid] = useState(null);
 	const [recentSubmitId, setRecentSubmitId] = useState("");

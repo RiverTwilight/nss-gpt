@@ -37,7 +37,7 @@ const ProgressBar = ({
 const Hero = () => {
   return y(k$1, null, y("h1", {
     className: "font font-mono font-bold text-4xl"
-  }, "NSSCTF", y("br", null), "2nd Prompt Challenge", y("span", {
+  }, "NSSCTF", y("br", null), "2024 Spring Recruit", y("span", {
     className: "blinking-underscore"
   }, "_")), y("div", {
     className: "py-6 text-slate-600"
@@ -151,10 +151,6 @@ const App = () => {
   const [score, setScore] = h(0);
   const [nssKey, setNssKey] = h("");
   const [nssSecret, setNssSecret] = h("");
-  // const [nssKey, setNssKey] = useState("7e4dd3f47adecd02f75c");
-  // const [nssSecret, setNssSecret] = useState(
-  // 	"c396a00f30620c092a9c626d0d9287995aaaba02"
-  // );
   const [history, setHistory] = h([]);
   const [uuid, setUuid] = h(null);
   const [recentSubmitId, setRecentSubmitId] = h("");
