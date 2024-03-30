@@ -2,6 +2,7 @@ import { h, Component, render, Fragment } from "preact";
 import { useState, useEffect } from "preact/hooks";
 import { FETCH_PARAMATERS, REQUEST_HEADER } from "../pages";
 import siteConfig from "../../site.config";
+import { showSnackbar } from "../components/SnackBar";
 
 const Result = ({ submitId, uuid }) => {
 	const [recentSubmitRes, setRecentSubmitRes] = useState(null);
@@ -23,10 +24,14 @@ const Result = ({ submitId, uuid }) => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				setRecentSubmitRes({
-					score: data.message.score,
-					result: data.message.result,
-				});
+				if (data.code !== 200) {
+					showSnackbar(data.message.error);
+				} else {
+					setRecentSubmitRes({
+						score: data.message.score,
+						result: data.message.result,
+					});
+				}
 			});
 	};
 

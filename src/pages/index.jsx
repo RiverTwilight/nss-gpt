@@ -66,7 +66,11 @@ const App = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				setRecentSubmitId(data.message.submit_id);
+				if (data.code !== 200) {
+					showSnackbar(data.message.error);
+				} else {
+					setRecentSubmitId(data.message.submit_id);
+				}
 			})
 			.finally(() => {
 				setIsLoading(false);

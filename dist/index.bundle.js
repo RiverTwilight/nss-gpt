@@ -69,39 +69,6 @@ var site_config = {
 
 var siteConfig = /*@__PURE__*/getDefaultExportFromCjs(site_config);
 
-const Result = ({
-  submitId,
-  uuid
-}) => {
-  const [recentSubmitRes, setRecentSubmitRes] = h(null);
-  p(() => {
-    if (submitId.length > 2) {
-      getSubmitResult(submitId);
-    }
-  }, [submitId]);
-  const getSubmitResult = id => {
-    fetch(`${siteConfig.api_host}/get_result/`, {
-      method: "POST",
-      body: JSON.stringify({
-        uuid: uuid,
-        submit_id: id
-      }),
-      ...FETCH_PARAMATERS
-    }).then(response => response.json()).then(data => {
-      setRecentSubmitRes({
-        score: data.message.score,
-        result: data.message.result
-      });
-    });
-  };
-  if (!!!recentSubmitRes) {
-    return null;
-  }
-  return y("div", {
-    className: "mt-4 gap-1 py-4 px-6 w-full bg-white rounded-xl shadow-lg flex items-center"
-  }, recentSubmitRes.score);
-};
-
 const Snackbar = ({
   message
 }) => {
@@ -127,6 +94,43 @@ const showSnackbar = message => {
   D(y(Snackbar, {
     message: message
   }), snackbarRoot);
+};
+
+const Result = ({
+  submitId,
+  uuid
+}) => {
+  const [recentSubmitRes, setRecentSubmitRes] = h(null);
+  p(() => {
+    if (submitId.length > 2) {
+      getSubmitResult(submitId);
+    }
+  }, [submitId]);
+  const getSubmitResult = id => {
+    fetch(`${siteConfig.api_host}/get_result/`, {
+      method: "POST",
+      body: JSON.stringify({
+        uuid: uuid,
+        submit_id: id
+      }),
+      ...FETCH_PARAMATERS
+    }).then(response => response.json()).then(data => {
+      if (data.code !== 200) {
+        showSnackbar(data.message.error);
+      } else {
+        setRecentSubmitRes({
+          score: data.message.score,
+          result: data.message.result
+        });
+      }
+    });
+  };
+  if (!!!recentSubmitRes) {
+    return null;
+  }
+  return y("div", {
+    className: "mt-4 gap-1 py-4 px-6 w-full bg-white rounded-xl shadow-lg flex items-center"
+  }, recentSubmitRes.score);
 };
 
 const SCORE_REFRESH_FREQUENCY = 30000;
@@ -178,7 +182,11 @@ const App = () => {
       }),
       ...FETCH_PARAMATERS
     }).then(response => response.json()).then(data => {
-      setRecentSubmitId(data.message.submit_id);
+      if (data.code !== 200) {
+        showSnackbar(data.message.error);
+      } else {
+        setRecentSubmitId(data.message.submit_id);
+      }
     }).finally(() => {
       setIsLoading(false);
     });
