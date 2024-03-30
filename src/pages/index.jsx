@@ -5,24 +5,9 @@ import Hero from "../components/hero";
 import Footer from "../components/footer";
 import Result from "../components/result";
 import { showSnackbar } from "../components/SnackBar";
-
-import siteConfig from "../../site.config";
+import apiClient from "../utils/apiClient";
 
 const SCORE_REFRESH_FREQUENCY = 30000;
-
-const REQUEST_HEADER = {
-	"content-type": "application/json",
-	"sec-fetch-mode": "cors",
-	"sec-fetch-site": "same-origin",
-};
-
-const FETCH_PARAMATERS = {
-	referrerPolicy: "strict-origin-when-cross-origin",
-	referrer: siteConfig.api_host,
-	mode: "cors",
-	credentials: "include",
-	headers: REQUEST_HEADER,
-};
 
 const App = () => {
 	const [activeTab, setActiveTab] = useState("Submit");
@@ -39,7 +24,15 @@ const App = () => {
 
 	useEffect(() => {
 		setUuid(localStorage.getItem("uuid") || "");
+		setRecentSubmitId(localStorage.getItem("recentSubmitId") || "");
 	}, []);
+
+	useEffect(() => {
+		// Override
+		apiClient.onFinished = () => {
+			setIsLoading(false);
+		};
+	}, [apiClient]);
 
 	useEffect(() => {
 		if (!!uuid) {
@@ -55,135 +48,82 @@ const App = () => {
 		if (!!!selectedProblem) return;
 
 		setIsLoading(true);
-		fetch(`${siteConfig.api_host}/submit/`, {
-			method: "POST",
-			body: JSON.stringify({
+
+		apiClient.submit(
+			{
 				challenge_name: selectedProblem,
 				prompt: prompt,
 				uuid: id,
-			}),
-			...FETCH_PARAMATERS,
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data.code !== 200) {
-					showSnackbar(data.message.error);
-				} else {
-					setRecentSubmitId(data.message.submit_id);
-				}
-			})
-			.finally(() => {
-				setIsLoading(false);
-			});
+			},
+			(data) => {
+				const submitId = data.message.submit_id;
+				setRecentSubmitId(submitId);
+				localStorage.setItem("recentSubmitId", submitId);
+			}
+		);
 	};
 
 	const handleGenerateUUID = () => {
 		setIsLoading(true);
 
-		fetch(`${siteConfig.api_host}/get_user_id/`, {
-			method: "POST",
-			body: JSON.stringify({
-				nss_key: nssKey.trim(),
-				nss_secret: nssSecret.trim(),
-			}),
-			...FETCH_PARAMATERS,
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data.code === 200 || data.code === 204) {
-					setUuid(data.message.uuid);
-					localStorage.setItem("uuid", data.message.uuid);
-					setActiveTab("Submit");
-				} else {
-					showSnackbar(data.message.error);
-				}
-			})
-			.finally(() => {
-				setIsLoading(false);
-			});
+		apiClient.generateUUID(
+			{
+				nssKey,
+				nssSecret,
+			},
+			(data) => {
+				setUuid(data.message.uuid);
+				localStorage.setItem("uuid", data.message.uuid);
+				setActiveTab("Submit");
+			}
+		);
 	};
 
 	const handleGetHistory = () => {
-		fetch(`${siteConfig.api_host}/get_history/`, {
-			method: "POST",
-			body: JSON.stringify({ uuid }),
-			...FETCH_PARAMATERS,
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				setHistory(data.message.history);
-			})
-			.finally(() => {
-				setIsLoading(false);
-			});
+		apiClient.getHistory(uuid, (data) => {
+			setHistory(data.message.history);
+		});
 	};
 
 	const getScore = (id) => {
-		fetch(`${siteConfig.api_host}/settle/`, {
-			method: "POST",
-			body: JSON.stringify({ uuid: id }),
-			...FETCH_PARAMATERS,
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data.code === 200) {
-					setScore(data.message.score);
-				}
-			})
-			.finally(() => {
-				setIsLoading(false);
-			});
+		apiClient.getScore(id, (data) => {
+			setScore(data.message.score);
+		});
 	};
 
 	const getProblems = (id) => {
-		fetch(`${siteConfig.api_host}/challenge/`, {
-			method: "POST",
-			body: JSON.stringify({ uuid: id }),
-			...FETCH_PARAMATERS,
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data.code == 200) {
-					let problemList = [];
+		apiClient.getProblems(id, (data) => {
+			let problemList = [];
 
-					data.message.solved.forEach((solved) => {
-						problemList.push({
-							solved: true,
-							type: solved.challenge_type,
-							name: solved.challenge_name,
-							prompt: solved.challenge_prompt,
-							best_score: solved.best_score,
-						});
-					});
-
-					data.message.unsolved.forEach((unsolved) => {
-						if (
-							!problemList.some(
-								(pro) => pro.name === unsolved.challenge_name
-							)
-						) {
-							problemList.push({
-								solved: false,
-								type: unsolved.challenge_type,
-								name: unsolved.challenge_name,
-								prompt: unsolved.challenge_prompt,
-								best_score: unsolved.best_score,
-							});
-						}
-					});
-
-					setProblems(problemList);
-					setSelectedProblem(data.message.unsolved.challenge_name);
-				}
-			})
-			.catch((e) => {
-				showSnackbar(
-					"An error occured. Try again later or refesh the page."
-				);
-			})
-			.finally(() => {
-				setIsLoading(false);
+			data.message.solved.forEach((solved) => {
+				problemList.push({
+					solved: true,
+					type: solved.challenge_type,
+					name: solved.challenge_name,
+					prompt: solved.challenge_prompt,
+					best_score: solved.best_score,
+				});
 			});
+
+			data.message.unsolved.forEach((unsolved) => {
+				if (
+					!problemList.some(
+						(pro) => pro.name === unsolved.challenge_name
+					)
+				) {
+					problemList.push({
+						solved: false,
+						type: unsolved.challenge_type,
+						name: unsolved.challenge_name,
+						prompt: unsolved.challenge_prompt,
+						best_score: unsolved.best_score,
+					});
+				}
+			});
+
+			setProblems(problemList);
+			setSelectedProblem(data.message.unsolved.challenge_name);
+		});
 	};
 
 	const handleKeyDown = (e) => {
@@ -485,7 +425,7 @@ const App = () => {
 												</span>
 
 												<span className="w-full">
-													14
+													--
 												</span>
 											</li>
 										))}
@@ -504,12 +444,14 @@ const App = () => {
 					</section>
 				</div>
 			</main>
-			<Result uuid={uuid} submitId={recentSubmitId} />
+			<Result
+				uuid={uuid}
+				submitId={recentSubmitId}
+				setIsLoading={setIsLoading}
+			/>
 			<Footer />
 		</div>
 	);
 };
 
 render(<App />, document.body);
-
-export { REQUEST_HEADER, FETCH_PARAMATERS };

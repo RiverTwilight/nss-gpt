@@ -69,62 +69,172 @@ var site_config = {
 
 var siteConfig = /*@__PURE__*/getDefaultExportFromCjs(site_config);
 
-const Snackbar = ({
-  message
-}) => {
-  p(() => {
-    const timer = setTimeout(() => {
-      const element = document.getElementById("snackbar-root");
-      if (element) {
-        D(null, element);
-      }
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
-  return y("div", {
-    className: "fixed flex justify-center top-4 right-0 left-0 z-50"
-  }, y("div", {
-    className: "bg-red-500 text-white px-4 py-2 rounded shadow-lg"
-  }, message));
+const REQUEST_HEADER = {
+  "content-type": "application/json",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-site": "same-origin"
 };
-const showSnackbar = message => {
-  const snackbarRoot = document.createElement("div");
-  snackbarRoot.id = "snackbar-root";
-  document.body.appendChild(snackbarRoot);
-  D(y(Snackbar, {
-    message: message
-  }), snackbarRoot);
-};
-
-const Result = ({
-  submitId,
-  uuid
-}) => {
-  const [recentSubmitRes, setRecentSubmitRes] = h(null);
-  p(() => {
-    if (submitId.length > 2) {
-      getSubmitResult(submitId);
-    }
-  }, [submitId]);
-  const getSubmitResult = id => {
-    fetch(`${siteConfig.api_host}/get_result/`, {
+class Client {
+  constructor({
+    onError = () => {},
+    onFinished = () => {},
+    host
+  }) {
+    this.onError = onError;
+    this.onFinished = onFinished;
+    this.host = host;
+  }
+  FETCH_PARAMATERS = {
+    referrerPolicy: "strict-origin-when-cross-origin",
+    referrer: this.host,
+    mode: "cors",
+    credentials: "include",
+    headers: REQUEST_HEADER
+  };
+  getSubmissonResult({
+    uuid,
+    id
+  }, onSuccess, onError) {
+    fetch(`${this.host}/get_result/`, {
       method: "POST",
       body: JSON.stringify({
         uuid: uuid,
         submit_id: id
       }),
-      ...FETCH_PARAMATERS
+      ...this.FETCH_PARAMATERS
     }).then(response => response.json()).then(data => {
       if (data.code !== 200) {
-        showSnackbar(data.message.error);
+        onError && onError(data.message.error);
+        this.onError(data.message.error);
       } else {
-        setRecentSubmitRes({
-          score: data.message.score,
-          result: data.message.result
-        });
+        onSuccess(data);
       }
     });
+  }
+  generateUUID({
+    nssKey,
+    nssSecret
+  }, onSuccess) {
+    fetch(`${this.host}/get_user_id/`, {
+      method: "POST",
+      body: JSON.stringify({
+        nss_key: nssKey.trim(),
+        nss_secret: nssSecret.trim()
+      }),
+      ...this.FETCH_PARAMATERS
+    }).then(response => response.json()).then(data => {
+      if (data.code === 200 || data.code === 204) {
+        onSuccess(data);
+      } else {
+        this.onError(data.message.error);
+      }
+    }).finally(this.onFinished);
+  }
+  getHistory(uuid, onSuccess) {
+    fetch(`${this.host}/get_history/`, {
+      method: "POST",
+      body: JSON.stringify({
+        uuid
+      }),
+      ...this.FETCH_PARAMATERS
+    }).then(response => response.json()).then(data => {
+      onSuccess(data);
+    }).finally(this.onFinished);
+  }
+  getScore(id, onSuccess) {
+    fetch(`${this.host}/settle/`, {
+      method: "POST",
+      body: JSON.stringify({
+        uuid: id
+      }),
+      ...this.FETCH_PARAMATERS
+    }).then(response => response.json()).then(data => {
+      if (data.code === 200) {
+        onSuccess(data);
+      }
+    }).finally(this.onFinished);
+  }
+  getProblems(id, onSuccess) {
+    fetch(`${this.host}/challenge/`, {
+      method: "POST",
+      body: JSON.stringify({
+        uuid: id
+      }),
+      ...this.FETCH_PARAMATERS
+    }).then(response => response.json()).then(data => {
+      if (data.code == 200) {
+        onSuccess(data);
+      }
+    }).catch(e => {
+      this.onError(e);
+    }).finally(this.onFinished);
+  }
+  submit = ({
+    challenge_name,
+    prompt,
+    uuid
+  }, onSuccess) => {
+    fetch(`${this.host}/submit/`, {
+      method: "POST",
+      body: JSON.stringify({
+        challenge_name,
+        prompt,
+        uuid
+      }),
+      ...this.FETCH_PARAMATERS
+    }).then(response => response.json()).then(data => {
+      if (data.code !== 200) {
+        this.onError(data.message.error);
+      } else {
+        onSuccess(data);
+      }
+    }).finally(this.onFinished);
   };
+}
+
+const apiClient = new Client({
+  host: siteConfig.api_host
+});
+
+const MAX_RETRY_COUNT = 5;
+const Result = ({
+  submitId,
+  uuid,
+  setIsLoading
+}) => {
+  const [recentSubmitRes, setRecentSubmitRes] = h(null);
+  const [retryCount, setRetryCount] = h(0);
+  p(() => {
+    const fetchResult = () => {
+      if (uuid && submitId) {
+        setIsLoading(true);
+        apiClient.getSubmissonResult({
+          uuid,
+          id: submitId
+        }, data => {
+          setIsLoading(false);
+          setRecentSubmitRes({
+            score: data.message.score,
+            result: data.message.result
+          });
+          localStorage.removeItem("recentSubmitId");
+        }, error => {
+          // Handle error and retry logic
+          if (retryCount < MAX_RETRY_COUNT) {
+            console.log("Start Retrying...");
+            const delay = retryCount === 0 ? 6000 : 5000;
+            setTimeout(fetchResult, delay);
+            setRetryCount(retryCount + 1);
+          } else {
+            console.error("Failed to fetch result after retries", error);
+            // Handle error notification or fallback UI
+          }
+        });
+      }
+    };
+
+    fetchResult();
+  }, [uuid, submitId]);
   if (!!!recentSubmitRes) {
     return null;
   }
@@ -134,18 +244,6 @@ const Result = ({
 };
 
 const SCORE_REFRESH_FREQUENCY = 30000;
-const REQUEST_HEADER = {
-  "content-type": "application/json",
-  "sec-fetch-mode": "cors",
-  "sec-fetch-site": "same-origin"
-};
-const FETCH_PARAMATERS = {
-  referrerPolicy: "strict-origin-when-cross-origin",
-  referrer: siteConfig.api_host,
-  mode: "cors",
-  credentials: "include",
-  headers: REQUEST_HEADER
-};
 const App = () => {
   const [activeTab, setActiveTab] = h("Submit");
   const [selectedProblem, setSelectedProblem] = h("");
@@ -160,7 +258,14 @@ const App = () => {
   const [recentSubmitId, setRecentSubmitId] = h("");
   p(() => {
     setUuid(localStorage.getItem("uuid") || "");
+    setRecentSubmitId(localStorage.getItem("recentSubmitId") || "");
   }, []);
+  p(() => {
+    // Override
+    apiClient.onFinished = () => {
+      setIsLoading(false);
+    };
+  }, [apiClient]);
   p(() => {
     if (!!uuid) {
       getProblems(uuid);
@@ -173,110 +278,62 @@ const App = () => {
   const handlePromptSubmit = id => {
     if (!!!selectedProblem) return;
     setIsLoading(true);
-    fetch(`${siteConfig.api_host}/submit/`, {
-      method: "POST",
-      body: JSON.stringify({
-        challenge_name: selectedProblem,
-        prompt: prompt,
-        uuid: id
-      }),
-      ...FETCH_PARAMATERS
-    }).then(response => response.json()).then(data => {
-      if (data.code !== 200) {
-        showSnackbar(data.message.error);
-      } else {
-        setRecentSubmitId(data.message.submit_id);
-      }
-    }).finally(() => {
-      setIsLoading(false);
+    apiClient.submit({
+      challenge_name: selectedProblem,
+      prompt: prompt,
+      uuid: id
+    }, data => {
+      const submitId = data.message.submit_id;
+      setRecentSubmitId(submitId);
+      localStorage.setItem("recentSubmitId", submitId);
     });
   };
   const handleGenerateUUID = () => {
     setIsLoading(true);
-    fetch(`${siteConfig.api_host}/get_user_id/`, {
-      method: "POST",
-      body: JSON.stringify({
-        nss_key: nssKey.trim(),
-        nss_secret: nssSecret.trim()
-      }),
-      ...FETCH_PARAMATERS
-    }).then(response => response.json()).then(data => {
-      if (data.code === 200 || data.code === 204) {
-        setUuid(data.message.uuid);
-        localStorage.setItem("uuid", data.message.uuid);
-        setActiveTab("Submit");
-      } else {
-        showSnackbar(data.message.error);
-      }
-    }).finally(() => {
-      setIsLoading(false);
+    apiClient.generateUUID({
+      nssKey,
+      nssSecret
+    }, data => {
+      setUuid(data.message.uuid);
+      localStorage.setItem("uuid", data.message.uuid);
+      setActiveTab("Submit");
     });
   };
   const handleGetHistory = () => {
-    fetch(`${siteConfig.api_host}/get_history/`, {
-      method: "POST",
-      body: JSON.stringify({
-        uuid
-      }),
-      ...FETCH_PARAMATERS
-    }).then(response => response.json()).then(data => {
+    apiClient.getHistory(uuid, data => {
       setHistory(data.message.history);
-    }).finally(() => {
-      setIsLoading(false);
     });
   };
   const getScore = id => {
-    fetch(`${siteConfig.api_host}/settle/`, {
-      method: "POST",
-      body: JSON.stringify({
-        uuid: id
-      }),
-      ...FETCH_PARAMATERS
-    }).then(response => response.json()).then(data => {
-      if (data.code === 200) {
-        setScore(data.message.score);
-      }
-    }).finally(() => {
-      setIsLoading(false);
+    apiClient.getScore(id, data => {
+      setScore(data.message.score);
     });
   };
   const getProblems = id => {
-    fetch(`${siteConfig.api_host}/challenge/`, {
-      method: "POST",
-      body: JSON.stringify({
-        uuid: id
-      }),
-      ...FETCH_PARAMATERS
-    }).then(response => response.json()).then(data => {
-      if (data.code == 200) {
-        let problemList = [];
-        data.message.solved.forEach(solved => {
+    apiClient.getProblems(id, data => {
+      let problemList = [];
+      data.message.solved.forEach(solved => {
+        problemList.push({
+          solved: true,
+          type: solved.challenge_type,
+          name: solved.challenge_name,
+          prompt: solved.challenge_prompt,
+          best_score: solved.best_score
+        });
+      });
+      data.message.unsolved.forEach(unsolved => {
+        if (!problemList.some(pro => pro.name === unsolved.challenge_name)) {
           problemList.push({
-            solved: true,
-            type: solved.challenge_type,
-            name: solved.challenge_name,
-            prompt: solved.challenge_prompt,
-            best_score: solved.best_score
+            solved: false,
+            type: unsolved.challenge_type,
+            name: unsolved.challenge_name,
+            prompt: unsolved.challenge_prompt,
+            best_score: unsolved.best_score
           });
-        });
-        data.message.unsolved.forEach(unsolved => {
-          if (!problemList.some(pro => pro.name === unsolved.challenge_name)) {
-            problemList.push({
-              solved: false,
-              type: unsolved.challenge_type,
-              name: unsolved.challenge_name,
-              prompt: unsolved.challenge_prompt,
-              best_score: unsolved.best_score
-            });
-          }
-        });
-        setProblems(problemList);
-        setSelectedProblem(data.message.unsolved.challenge_name);
-      }
-    }).catch(e => {
-      showSnackbar("An error occured. Try again later or refesh the page.");
-    }).finally(() => {
-      setIsLoading(false);
+        }
+      });
+      setProblems(problemList);
+      setSelectedProblem(data.message.unsolved.challenge_name);
     });
   };
   const handleKeyDown = e => {
@@ -455,17 +512,15 @@ const App = () => {
     className: "w-full text-green-700 text-sm"
   }, item.challenge_name), y("span", {
     className: "w-full"
-  }, "14")))), y("div", {
+  }, "--")))), y("div", {
     className: "text-center"
   }, y("button", {
     onClick: handleGetHistory,
     className: "mt-4 px-4 py-2 bg-blue-600 text-white rounded uppercase"
   }, "Refresh History")))))), y(Result, {
     uuid: uuid,
-    submitId: recentSubmitId
+    submitId: recentSubmitId,
+    setIsLoading: setIsLoading
   }), y(Footer, null));
 };
 D(y(App, null), document.body);
-
-exports.FETCH_PARAMATERS = FETCH_PARAMATERS;
-exports.REQUEST_HEADER = REQUEST_HEADER;

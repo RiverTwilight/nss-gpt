@@ -1,39 +1,48 @@
 import { h, Component, render, Fragment } from "preact";
 import { useState, useEffect } from "preact/hooks";
-import { FETCH_PARAMATERS, REQUEST_HEADER } from "../pages";
-import siteConfig from "../../site.config";
-import { showSnackbar } from "../components/SnackBar";
+import apiClient from "../utils/apiClient";
 
-const Result = ({ submitId, uuid }) => {
+const MAX_RETRY_COUNT = 5;
+
+const Result = ({ submitId, uuid, setIsLoading }) => {
 	const [recentSubmitRes, setRecentSubmitRes] = useState(null);
+	const [retryCount, setRetryCount] = useState(0);
 
 	useEffect(() => {
-		if (submitId.length > 2) {
-			getSubmitResult(submitId);
-		}
-	}, [submitId]);
+		const fetchResult = () => {
+			if (uuid && submitId) {
+				setIsLoading(true);
+				apiClient.getSubmissonResult(
+					{ uuid, id: submitId },
+					(data) => {
+						setIsLoading(false);
 
-	const getSubmitResult = (id) => {
-		fetch(`${siteConfig.api_host}/get_result/`, {
-			method: "POST",
-			body: JSON.stringify({
-				uuid: uuid,
-				submit_id: id,
-			}),
-			...FETCH_PARAMATERS,
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data.code !== 200) {
-					showSnackbar(data.message.error);
-				} else {
-					setRecentSubmitRes({
-						score: data.message.score,
-						result: data.message.result,
-					});
-				}
-			});
-	};
+						setRecentSubmitRes({
+							score: data.message.score,
+							result: data.message.result,
+						});
+						localStorage.removeItem("recentSubmitId");
+					},
+					(error) => {
+						// Handle error and retry logic
+						if (retryCount < MAX_RETRY_COUNT) {
+							console.log("Start Retrying...");
+							const delay = retryCount === 0 ? 6000 : 5000;
+							setTimeout(fetchResult, delay);
+							setRetryCount(retryCount + 1);
+						} else {
+							console.error(
+								"Failed to fetch result after retries",
+								error
+							);
+							// Handle error notification or fallback UI
+						}
+					}
+				);
+			}
+		};
+		fetchResult();
+	}, [uuid, submitId]);
 
 	if (!!!recentSubmitRes) {
 		return null;
